@@ -1,0 +1,28 @@
+generates:
+  src/types/get-all-global-states.types.ts:
+    schema:
+      - https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2:
+          headers:
+            Authorization: undefined
+    documents: "src/utils/get-all-global-states.graphql.ts"
+    config:
+      scalars:
+        URI: string
+        Int: number
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+
+  src/types/get-all-blocks-info.types.ts:
+    schema:
+      - https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks:
+          headers:
+            Authorization: undefined
+    documents: "src/utils/get-all-blocks-info.graphql.ts"
+    config:
+      scalars:
+        URI: string
+        BigInt: string
+    plugins:
+      - "typescript"
+      - "typescript-operations"

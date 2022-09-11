@@ -8,6 +8,9 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+import { getAllBlocksInfo } from "./utils/get-all-blocks-info.graphql";
+import { getAllGlobalStates } from "./utils/get-all-global-states.graphql";
+
 export interface Env {
   // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
   // MY_KV_NAMESPACE: KVNamespace;
@@ -25,6 +28,22 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
-    return new Response("Hello World!");
+    const urlParams = new URL(request.url);
+    const params = Object.fromEntries(urlParams.searchParams);
+    const blockNumber = await getAllBlocksInfo({
+      timestamp_gte: params.timestamp,
+    });
+    const globalStates = await getAllGlobalStates({
+      number: Number(blockNumber),
+    });
+    const globalStatesToJson = JSON.parse(globalStates);
+    const globalStatesToJsonStringify = JSON.stringify(
+      globalStatesToJson,
+      null,
+      2
+    );
+    console.info(globalStatesToJsonStringify);
+
+    return new Response(globalStatesToJsonStringify);
   },
 };
