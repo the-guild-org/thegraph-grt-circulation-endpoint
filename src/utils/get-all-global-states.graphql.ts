@@ -1,4 +1,9 @@
-import { AllGlobalStatesQueryVariables } from "../types/get-all-global-states.types";
+import { ExecutionResult } from "graphql";
+import {
+  AllGlobalStatesQueryVariables,
+  AllGlobalStatesQuery,
+} from "../types/get-all-global-states.types";
+import { fetchGraphQL } from "./fetch-graphql";
 
 const allGlobalStates = /* GraphQL */ `
   query allGlobalStates($number: Int!) {
@@ -12,43 +17,54 @@ const allGlobalStates = /* GraphQL */ `
   }
 `;
 
-export async function getAllGlobalStates(
-  variables: AllGlobalStatesQueryVariables
-) {
-  const grtInfo = await fetch(
-    "https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2",
-    {
-      headers: {
-        accept: "*/*",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        query: allGlobalStates,
-        variables: variables,
-      }),
-      method: "POST",
-    }
-  )
-    .then((r) => r.text())
-    .then((r) => {
-      const foundGlobalStates = r;
+export async function getGlobalStateByBlockNumber(blockNumber: number) {
+  const globalStateResponse = await fetchGraphQL<
+    AllGlobalStatesQueryVariables,
+    AllGlobalStatesQuery
+  >({
+    url: "https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2",
+    query: allGlobalStates,
+    variables: {
+      number: blockNumber,
+    },
+  });
 
-      if (foundGlobalStates === null || foundGlobalStates === undefined) {
-        throw new Error(
-          `Can't find any global states info for filter provided.`
-        );
-      }
-      console.info(
-        `Variables for getAllGlobalStates func is number. number =  ${variables.number}`
-      );
-      if (variables === null || variables === undefined) {
-        throw new Error(
-          `Variables for getAllGlobalStates func is null or undefined. Variables = ${variables}`
-        );
-      }
+  return globalStateResponse.globalStates[0];
 
-      return foundGlobalStates;
-    });
+  // const grtInfo = await fetch(
+  //   "https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2",
+  //   {
+  //     headers: {
+  //       accept: "*/*",
+  //       "content-type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       query: allGlobalStates,
+  //       variables: variables,
+  //     }),
+  //     method: "POST",
+  //   }
+  // )
+  //   .then((r) => r.text())
+  //   .then((r) => {
+  //     const foundGlobalStates = r;
 
-  return grtInfo;
+  //     if (foundGlobalStates === null || foundGlobalStates === undefined) {
+  //       throw new Error(
+  //         `Can't find any global states info for filter provided.`
+  //       );
+  //     }
+  //     console.info(
+  //       `Variables for getAllGlobalStates func is number. number =  ${variables.number}`
+  //     );
+  //     if (variables === null || variables === undefined) {
+  //       throw new Error(
+  //         `Variables for getAllGlobalStates func is null or undefined. Variables = ${variables}`
+  //       );
+  //     }
+
+  //     return foundGlobalStates;
+  //   });
+
+  // return grtInfo;
 }

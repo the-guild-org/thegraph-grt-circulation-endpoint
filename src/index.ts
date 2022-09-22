@@ -8,8 +8,8 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-import { getAllBlocksInfo } from "./utils/get-all-blocks-info.graphql";
-import { getAllGlobalStates } from "./utils/get-all-global-states.graphql";
+import { getBlockNumberByTimestamp } from "./utils/get-all-blocks-info.graphql";
+import { getGlobalStateByBlockNumber } from "./utils/get-all-global-states.graphql";
 
 export interface Env {
   // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
@@ -22,28 +22,28 @@ export interface Env {
   // MY_BUCKET: R2Bucket;
 }
 
+type Something = {
+  id: string;
+  boop: string;
+};
+
 export default {
   async fetch(
     request: Request,
     env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
+    // 1. Get the query params and extract the timestamp from it
     const urlParams = new URL(request.url);
     const params = Object.fromEntries(urlParams.searchParams);
-    const blockNumber = await getAllBlocksInfo({
-      timestamp_gte: params.timestamp,
-    });
-    const globalStates = await getAllGlobalStates({
-      number: Number(blockNumber),
-    });
-    const globalStatesToJson = JSON.parse(globalStates);
-    const globalStatesToJsonStringify = JSON.stringify(
-      globalStatesToJson,
-      null,
-      2
-    );
-    console.info(globalStatesToJsonStringify);
-
-    return new Response(globalStatesToJsonStringify);
+    const timestamp = params.timestamp
+      ? parseInt(params.timestamp)
+      : Date.now();
+    // 2. Convert the timestamp to block number
+    const blockNumber = await getBlockNumberByTimestamp(timestamp);
+    // 3. Fetch the block state using the block number
+    const globalState = await getGlobalStateByBlockNumber(blockNumber);
+    // 4. Return the block state
+    return new Response(JSON.stringify(globalState));
   },
 };
