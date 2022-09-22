@@ -18,7 +18,10 @@ export async function fetchGraphQL<TVariables, TResponse>(input: {
   });
 
   const body = await response.json<ExecutionResult<TResponse>>();
-  const data = body.data;
 
-  return data!;
+  if (body.errors && body.errors.length > 0) {
+    throw new Error(`Failed to run GraphQL query: ${body.errors[0].message}`);
+  }
+
+  return body.data!;
 }

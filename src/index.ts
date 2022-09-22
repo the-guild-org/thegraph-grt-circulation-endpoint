@@ -34,8 +34,13 @@ export default {
     ctx: ExecutionContext
   ): Promise<Response> {
     // 1. Get the query params and extract the timestamp from it
+    // request.url -> always valid -> new URL -> nothing to test
     const urlParams = new URL(request.url);
+    // nothing to test
     const params = Object.fromEntries(urlParams.searchParams);
+    // 1: should use timestamp from search params when it's provided
+    // 2: should use current timestamp when search params is not provided
+    // 3: should throw an error when timestamp is not a valid integer
     const timestamp = params.timestamp
       ? parseInt(params.timestamp)
       : Date.now();
