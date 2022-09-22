@@ -33,22 +33,32 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
-    // 1. Get the query params and extract the timestamp from it
-    // request.url -> always valid -> new URL -> nothing to test
-    const urlParams = new URL(request.url);
-    // nothing to test
-    const params = Object.fromEntries(urlParams.searchParams);
-    // 1: should use timestamp from search params when it's provided
-    // 2: should use current timestamp when search params is not provided
-    // 3: should throw an error when timestamp is not a valid integer
-    const timestamp = params.timestamp
-      ? parseInt(params.timestamp)
-      : Date.now();
-    // 2. Convert the timestamp to block number
-    const blockNumber = await getBlockNumberByTimestamp(timestamp);
-    // 3. Fetch the block state using the block number
-    const globalState = await getGlobalStateByBlockNumber(blockNumber);
-    // 4. Return the block state
-    return new Response(JSON.stringify(globalState));
+    try {
+      // 1. Get the query params and extract the timestamp from it
+      // request.url -> always valid -> new URL -> nothing to test
+      const urlParams = new URL(request.url);
+      // nothing to test
+      const params = Object.fromEntries(urlParams.searchParams);
+      // 1: should use timestamp from search params when it's provided
+      // 2: should use current timestamp when search params is not provided
+      // 3: should throw an error when timestamp is not a valid integer
+      const timestamp = params.timestamp
+        ? parseInt(params.timestamp)
+        : Date.now();
+      // 2. Convert the timestamp to block number
+      const blockNumber = await getBlockNumberByTimestamp(timestamp);
+      // 3. Fetch the block state using the block number
+      const globalState = await getGlobalStateByBlockNumber(blockNumber);
+      // 4. Return the block state
+      return new Response(JSON.stringify(globalState));
+    } catch (e) {
+      console.error(e);
+      return new Response(
+        JSON.stringify({ error: "something went wrong, please call Tuval" }),
+        {
+          status: 500,
+        }
+      );
+    }
   },
 };
