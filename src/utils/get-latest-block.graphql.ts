@@ -42,7 +42,5 @@ export async function getLatestBlock(): Promise<BlockNumber> {
   // 1: blocks is empty array -> no "[0]" -> what are we doing?!
   // 2: what are we doing in case blocks.length > 1 ?
   // 3: what are we doing in case of failing parseInt? (number => "boop" -> NaN)
-  return !allBlocksInfoResponse
-    ? null
-    : parseInt(allBlocksInfoResponse.blocks[0].number);
+  return parseInt(allBlocksInfoResponse.blocks[0].number);
 }

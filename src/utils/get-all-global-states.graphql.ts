@@ -38,5 +38,5 @@ export async function getGlobalStateByBlockNumber(blockNumber: number | null) {
 
   // 1: "globalStates" is empty array -> no "[0]" -> what are we doing?!
   // 2: what are we doing in case of globalStates.length > 1 ?
-  return globalStateResponse.globalStates[0];
+  return !globalStateResponse ? null : globalStateResponse.globalStates[0];
 }

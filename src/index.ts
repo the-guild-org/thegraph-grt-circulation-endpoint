@@ -70,6 +70,10 @@ export default {
       ).then((globalStateInfo) => {
         console.info(`blockInfo is: ${globalStateInfo}`);
         if (!globalStateInfo) {
+          console.info(
+            `globalStateInfo is: ${globalStateInfo} and globalStateInfo false`
+          );
+
           return getLatestGlobalState();
         }
 
