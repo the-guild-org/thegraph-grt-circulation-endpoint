@@ -6,6 +6,7 @@ generates:
             Authorization: undefined
     documents: "src/utils/get-all-global-states.graphql.ts"
     config:
+      enumsAsTypes: true
       scalars:
         URI: string
         Int: number

@@ -19,7 +19,7 @@ const allGlobalStates = /* GraphQL */ `
   }
 `;
 
-export async function getGlobalStateByBlockNumber(blockNumber: number | null) {
+export async function getLatestGlobalState() {
   // 1: we got HTTP 200 with "data" set
   // 2: we got HTTP 200 with "errors" set -> throw an error
   // 3: we got HTTP != 200 -> throw an error
@@ -30,9 +30,7 @@ export async function getGlobalStateByBlockNumber(blockNumber: number | null) {
     url: "https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2",
     query: allGlobalStates,
     variables: {
-      blockFilter: {
-        number: blockNumber,
-      },
+      orderDirection: "desc",
     },
   });
 
