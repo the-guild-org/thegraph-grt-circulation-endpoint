@@ -9,8 +9,9 @@
  */
 
 import moment from "moment";
-import { getBlockNumberByTimestamp } from "./utils/get-all-blocks-info.graphql";
+import { getBlockByTimestamp } from "./utils/get-all-blocks-info.graphql";
 import { getGlobalStateByBlockNumber } from "./utils/get-all-global-states.graphql";
+import { getLatestBlock } from "./utils/get-latest-block.graphql";
 
 export interface Env {
   // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
@@ -48,17 +49,27 @@ export default {
       const timestamp = params.timestamp
         ? parseInt(params.timestamp)
         : todayTimestamp;
+      console.info(`Timestamp is: ${params.timestamp}`);
       console.info(`Timestamp is: ${timestamp}`);
       // 2. Convert the timestamp to block number
-      const blockNumber = await getBlockNumberByTimestamp(timestamp);
-      console.info(`BlockNumber is: ${blockNumber}`);
+      const blockDetails = await getBlockByTimestamp(timestamp).then(
+        (blockInfo) => {
+          console.info(`blockInfo is: ${blockInfo}`);
+          if (!blockInfo) {
+            return getLatestBlock();
+          }
+
+          return blockInfo;
+        }
+      );
+      console.info(`blockDetails is: ${blockDetails}`);
 
       // 3. Fetch the block state using the block number
-      const globalState = await getGlobalStateByBlockNumber(blockNumber);
+      const globalState = await getGlobalStateByBlockNumber(blockDetails);
       console.info(`Global State is: ${globalState}`);
 
       // 4. Return the block state
-      return new Response(JSON.stringify(globalState));
+      return new Response(JSON.stringify({ globalState }));
     } catch (e) {
       console.error(e);
       return new Response(

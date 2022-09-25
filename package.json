@@ -19,7 +19,8 @@
   "scripts": {
     "start": "wrangler dev",
     "deploy": "wrangler publish",
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
     "moment": "2.29.4",

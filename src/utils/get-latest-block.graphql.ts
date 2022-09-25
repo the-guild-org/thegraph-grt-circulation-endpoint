@@ -22,11 +22,9 @@ const allBlocksInfo = /* GraphQL */ `
   }
 `;
 
-type BlockNumber = number;
+type BlockNumber = number | null;
 
-export async function getBlockByTimestamp(
-  timestamp: number
-): Promise<BlockNumber | null> {
+export async function getLatestBlock(): Promise<BlockNumber> {
   // 1: we got HTTP 200 with "data" set
   // 2: we got HTTP 200 with "errors" set -> throw an error
   // 3: we got HTTP != 200 -> throw an error
@@ -37,16 +35,12 @@ export async function getBlockByTimestamp(
     url: "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
     query: allBlocksInfo,
     variables: {
-      blockFilter: {
-        timestamp_gte: String(timestamp),
-      },
+      orderDirection: "desc",
     },
   });
 
   // 1: blocks is empty array -> no "[0]" -> what are we doing?!
   // 2: what are we doing in case blocks.length > 1 ?
   // 3: what are we doing in case of failing parseInt? (number => "boop" -> NaN)
-  return allBlocksInfoResponse.blocks.length === 0
-    ? null
-    : parseInt(allBlocksInfoResponse.blocks[0].number);
+  return parseInt(allBlocksInfoResponse.blocks[0].number);
 }
