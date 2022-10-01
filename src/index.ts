@@ -50,12 +50,12 @@ export default {
       const timestamp = params.timestamp
         ? parseInt(params.timestamp)
         : todayTimestamp;
-      console.info(`Timestamp is: ${params.timestamp}`);
+      console.info(`Timestamp params is: ${params.timestamp}`);
       console.info(`Timestamp is: ${timestamp}`);
       // 2. Convert the timestamp to block number
       const blockDetails = await getBlockByTimestamp(timestamp).then(
         (blockInfo) => {
-          console.info(`blockInfo is: ${blockInfo}`);
+          console.info(`blockDetails - blockInfo is: ${blockInfo}`);
           if (!blockInfo) {
             return getLatestBlock();
           }
@@ -68,7 +68,7 @@ export default {
       const globalStateDetails = await getGlobalStateByBlockNumber(
         blockDetails
       ).then((globalStateInfo) => {
-        console.info(`blockInfo is: ${globalStateInfo}`);
+        console.info(`globalStateDetails - blockInfo is: ${globalStateInfo}`);
         if (!globalStateInfo) {
           console.info(
             `globalStateInfo is: ${globalStateInfo} and globalStateInfo false`

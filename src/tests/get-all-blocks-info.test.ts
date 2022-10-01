@@ -1,24 +1,9 @@
 import { describe, expect, test } from "@jest/globals";
-import { getBlockNumberByTimestamp } from "../utils/get-all-blocks-info.graphql";
+import mockFetch from "jest-mock-fetch";
+import { getBlockByTimestamp } from "../utils/get-all-blocks-info.graphql";
 
 describe("getAllBlocksInfo", () => {
-  // test("should throw an error when HTTP response is not 200", () => {});
-  test("should throw an error when HTTP response is 200 but we got GraphQL errors", () => {
-    // prepare
-    mockFetch(
-      "POST",
-      "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
-      {
-        errors: [{ message: "oopsi boopsi" }],
-      }
-    );
-    // run
-    const result$ = getBlockNumberByTimestamp(1663851343873);
-    // assert
-    expect(result$).toThrow();
-  });
-  test("should throw an error when data does not contain any block (empty array)", async () => {
-    // prepare
+  test("When we got 0 blocks -> we should return Null", async () => {
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
@@ -28,13 +13,31 @@ describe("getAllBlocksInfo", () => {
         },
       }
     );
-    // run
-    const result$ = getBlockNumberByTimestamp(1663851343873);
-    // assert
-    expect(result$).toThrow();
+    const result = await getBlockByTimestamp(121212121212121212);
+    expect(result).toBeNull();
+  });
+
+  test("When we got valid timestamp -> we should return Number", async () => {
+    mockFetch(
+      "POST",
+      "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+      {
+        data: {
+          blocks: [
+            {
+              id: "0xd125365fb2839beefb583319429a544da58758548a0454fddb9fed553ed94b06",
+              number: "15653542",
+              timestamp: "1664630075",
+            },
+          ],
+        },
+      }
+    );
+    const result = await getBlockByTimestamp(1664630066);
+    expect(result).not.toBeNull();
+    expect(result).toEqual(expect.any(Number));
   });
   test("should return valid block number when 1 block is found", async () => {
-    // prepare
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
@@ -50,12 +53,23 @@ describe("getAllBlocksInfo", () => {
         },
       }
     );
-    // run
-    const blockNumber = await getBlockNumberByTimestamp(1);
-    // assert
-    expect(blockNumber).toBeDefined();
-    expect(typeof blockNumber).toBe("number");
-    expect(blockNumber).toBe(1);
+    const result = await getBlockByTimestamp(1);
+    expect(result).toBeNull();
   });
-  // test("should return valid block number when >1 block is found", () => {});
+  test("Shoudl throw error when we got HTTP 300/400/500", async () => {
+    mockFetch(
+      "POST",
+      "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+      {
+        errors: [
+          {
+            message:
+              "Failed to decode `BigInt` value: `cannot parse integer from empty string`",
+          },
+        ],
+      }
+    );
+    const result = await getBlockByTimestamp(1);
+    expect(result).toBeNull();
+  });
 });

@@ -46,7 +46,12 @@ export async function getBlockByTimestamp(
   // 1: blocks is empty array -> no "[0]" -> what are we doing?!
   // 2: what are we doing in case blocks.length > 1 ?
   // 3: what are we doing in case of failing parseInt? (number => "boop" -> NaN)
-  return allBlocksInfoResponse.blocks.length === 0
+  if (!allBlocksInfoResponse) {
+    throw new Error("Failed to fetch latest block");
+  }
+
+  return allBlocksInfoResponse.blocks.length === 0 ||
+    allBlocksInfoResponse.blocks[0].number === "1"
     ? null
     : parseInt(allBlocksInfoResponse.blocks[0].number);
 }

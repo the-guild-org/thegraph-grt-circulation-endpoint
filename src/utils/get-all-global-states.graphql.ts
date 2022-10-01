@@ -36,6 +36,10 @@ export async function getGlobalStateByBlockNumber(blockNumber: number | null) {
     },
   });
 
+  if (!globalStateResponse) {
+    throw new Error("Failed to fetch latest global state");
+  }
+
   // 1: "globalStates" is empty array -> no "[0]" -> what are we doing?!
   // 2: what are we doing in case of globalStates.length > 1 ?
   return !globalStateResponse ? null : globalStateResponse.globalStates[0];
