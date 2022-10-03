@@ -25,9 +25,6 @@ const allBlocksInfo = /* GraphQL */ `
 type BlockNumber = number | null;
 
 export async function getLatestBlock(): Promise<BlockNumber> {
-  // 1: we got HTTP 200 with "data" set
-  // 2: we got HTTP 200 with "errors" set -> throw an error
-  // 3: we got HTTP != 200 -> throw an error
   const allBlocksInfoResponse = await fetchGraphQL<
     AllBlocksInfoQueryVariables,
     AllBlocksInfoQuery
@@ -38,15 +35,15 @@ export async function getLatestBlock(): Promise<BlockNumber> {
       orderDirection: "desc",
     },
   });
+
   if (!allBlocksInfoResponse) {
+    console.error(`${allBlocksInfoResponse}`);
     throw new Error("Failed to fetch latest block");
   }
   if (!allBlocksInfoResponse.blocks) {
+    console.error(`${allBlocksInfoResponse}`);
     throw new Error("Failed to fetch latest block");
   }
 
-  // 1: blocks is empty array -> no "[0]" -> what are we doing?!
-  // 2: what are we doing in case blocks.length > 1 ?
-  // 3: what are we doing in case of failing parseInt? (number => "boop" -> NaN)
   return parseInt(allBlocksInfoResponse.blocks[0].number);
 }

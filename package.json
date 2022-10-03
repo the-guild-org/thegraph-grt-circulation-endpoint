@@ -23,6 +23,7 @@
     "generate": "graphql-codegen --config codegen.yml"
   },
   "dependencies": {
+    "@tsndr/cloudflare-worker-jwt": "^2.0.1",
     "jest-mock-fetch": "^2.0.5",
     "moment": "2.29.4",
     "ts-jest": "29.0.1"

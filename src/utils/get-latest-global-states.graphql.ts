@@ -20,9 +20,6 @@ const allGlobalStates = /* GraphQL */ `
 `;
 
 export async function getLatestGlobalState() {
-  // 1: we got HTTP 200 with "data" set
-  // 2: we got HTTP 200 with "errors" set -> throw an error
-  // 3: we got HTTP != 200 -> throw an error
   const globalStateResponse = await fetchGraphQL<
     AllGlobalStatesQueryVariables,
     AllGlobalStatesQuery
@@ -35,10 +32,9 @@ export async function getLatestGlobalState() {
   });
 
   if (!globalStateResponse) {
+    console.error(`${globalStateResponse}`);
     throw new Error("Failed to fetch latest global state");
   }
 
-  // 1: "globalStates" is empty array -> no "[0]" -> what are we doing?!
-  // 2: what are we doing in case of globalStates.length > 1 ?
   return globalStateResponse.globalStates[0];
 }

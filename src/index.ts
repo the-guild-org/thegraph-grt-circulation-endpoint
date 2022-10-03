@@ -7,28 +7,14 @@
  *
  * Learn more at https://developers.cloudflare.com/workers/
  */
-
+import jwt from "@tsndr/cloudflare-worker-jwt";
 import moment from "moment";
-import { getBlockByTimestamp } from "./utils/get-all-blocks-info.graphql";
-import { getGlobalStateByBlockNumber } from "./utils/get-all-global-states.graphql";
+import { getBlockByTimestamp } from "./utils/get-block-by-timestamp.graphql";
+import { getGlobalStateByBlockNumber } from "./utils/get-global-state-by-block-number";
 import { getLatestBlock } from "./utils/get-latest-block.graphql";
 import { getLatestGlobalState } from "./utils/get-latest-global-states.graphql";
 
-export interface Env {
-  // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-  // MY_KV_NAMESPACE: KVNamespace;
-  //
-  // Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-  // MY_DURABLE_OBJECT: DurableObjectNamespace;
-  //
-  // Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-  // MY_BUCKET: R2Bucket;
-}
-
-type Something = {
-  id: string;
-  boop: string;
-};
+export interface Env {}
 
 export default {
   async fetch(
@@ -36,23 +22,26 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
-    try {
-      // 1. Get the query params and extract the timestamp from it
-      // request.url -> always valid -> new URL -> nothing to test
-      const urlParams = new URL(request.url);
-      // nothing to test
-      const params = Object.fromEntries(urlParams.searchParams);
-      // 1: should use timestamp from search params when it's provided
-      // 2: should use current timestamp when search params is not provided
-      // 3: should throw an error when timestamp is not a valid integer
+    const urlParams = new URL(request.url);
+    const params = Object.fromEntries(urlParams.searchParams);
+
+    const isValid = await jwt.verify(
+      // @ts-ignore: Object is possibly 'null'.
+      request.headers.get("Authorization").split(" ")[1],
+      "secret"
+    );
+    console.info({ isValid });
+
+    if (isValid) {
+      
       const todayTimestamp = moment().unix();
-      // const defaultTimestamp = moment.unix(today.unix);
       const timestamp = params.timestamp
         ? parseInt(params.timestamp)
         : todayTimestamp;
-      console.info(`Timestamp params is: ${params.timestamp}`);
-      console.info(`Timestamp is: ${timestamp}`);
-      // 2. Convert the timestamp to block number
+
+      console.info(`Params timestamp is: ${params.timestamp}`);
+      console.info(`Timestamp for blockDetails: ${timestamp}`);
+
       const blockDetails = await getBlockByTimestamp(timestamp).then(
         (blockInfo) => {
           console.info(`blockDetails - blockInfo is: ${blockInfo}`);
@@ -63,6 +52,7 @@ export default {
           return blockInfo;
         }
       );
+
       console.info(`blockDetails is: ${blockDetails}`);
 
       const globalStateDetails = await getGlobalStateByBlockNumber(
@@ -79,21 +69,13 @@ export default {
 
         return globalStateInfo;
       });
-      // 3. Fetch the block state using the block number
       console.info(`Global State is: ${globalStateDetails}`);
 
-      // 4. Return the block state
       return new Response(JSON.stringify({ globalStateDetails }));
-    } catch (e) {
-      console.error(e);
-      return new Response(
-        JSON.stringify({
-          error: `Something went wrong, please call Tuval.`,
-        }),
-        {
-          status: 500,
-        }
-      );
+    } else {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 403,
+      });
     }
   },
 };

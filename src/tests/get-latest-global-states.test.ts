@@ -24,15 +24,4 @@ describe("getLatestGlobalState", () => {
     const result$ = getLatestGlobalState();
     expect(result$);
   });
-  // test("should throw an error when HTTP response is 200 but we got GraphQL errors", async () => {
-  //   mockFetch(
-  //     "POST",
-  //     "https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2",
-  //     {
-  //       errors: [{ message: "oopsi boopsi" }],
-  //     }
-  //   );
-  //   const result = await getLatestGlobalState();
-  //   expect(result).toThrow(Error);
-  // });
 });

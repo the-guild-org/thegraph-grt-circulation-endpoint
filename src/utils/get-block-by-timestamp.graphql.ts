@@ -27,9 +27,6 @@ type BlockNumber = number;
 export async function getBlockByTimestamp(
   timestamp: number
 ): Promise<BlockNumber | null> {
-  // 1: we got HTTP 200 with "data" set
-  // 2: we got HTTP 200 with "errors" set -> throw an error
-  // 3: we got HTTP != 200 -> throw an error
   const allBlocksInfoResponse = await fetchGraphQL<
     AllBlocksInfoQueryVariables,
     AllBlocksInfoQuery
@@ -43,10 +40,8 @@ export async function getBlockByTimestamp(
     },
   });
 
-  // 1: blocks is empty array -> no "[0]" -> what are we doing?!
-  // 2: what are we doing in case blocks.length > 1 ?
-  // 3: what are we doing in case of failing parseInt? (number => "boop" -> NaN)
   if (!allBlocksInfoResponse) {
+    console.error(`${allBlocksInfoResponse}`);
     throw new Error("Failed to fetch latest block");
   }
 
