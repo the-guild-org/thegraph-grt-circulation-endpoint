@@ -1,7 +1,7 @@
 generates:
   src/types/get-all-global-states.types.ts:
     schema:
-      - https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2:
+      - https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply:
           headers:
             Authorization: undefined
     documents: "src/utils/get-all-global-states.graphql.ts"
@@ -9,7 +9,6 @@ generates:
       enumsAsTypes: true
       scalars:
         URI: string
-        Int: number
     plugins:
       - "typescript"
       - "typescript-operations"
@@ -17,8 +16,6 @@ generates:
   src/types/get-all-blocks-info.types.ts:
     schema:
       - https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks:
-          headers:
-            Authorization: undefined
     documents: "src/utils/get-all-blocks-info.graphql.ts"
     config:
       enumsAsTypes: true

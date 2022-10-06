@@ -20,18 +20,14 @@ export async function fetchGraphQL<TVariables, TResponse>(input: {
   const body = await response.json<ExecutionResult<TResponse>>();
 
   if (body.errors && body.errors.length > 0) {
-    console.error(`${body.errors}`);
+    console.log(`${body.errors}`);
     throw new Error(
-      `ERROR: body.errors[0].message: ${body.errors[0].message} is throw error`
+      `GraphQL Errors: ${body.errors.map((e) => e.message).join(",")}`
     );
   }
   if (!body.data) {
-    console.error(`${body.data}`);
-    throw new Error(`ERROR: body.data: ${body.data} is throw error`);
-  }
-  if (!body) {
-    console.error(`${body}`);
-    throw new Error(`ERROR: body: ${body} is throw error`);
+    console.log(`${body.data}`);
+    throw new Error(`GraphQL Error: unexpected empty response`);
   }
 
   return body.data!;

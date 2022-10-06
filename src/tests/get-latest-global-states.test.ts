@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
 import mockFetch from "jest-mock-fetch";
-import { getLatestGlobalState } from "../utils/get-latest-global-states.graphql";
+import { getLatestGlobalState } from "../utils/global-states.graphql";
 
 describe("getLatestGlobalState", () => {
   test("should throw an error when HTTP response is 200 but we got GraphQL errors", () => {

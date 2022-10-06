@@ -1,9 +1,13 @@
 import { describe, expect, test } from "@jest/globals";
-import { getBlockByTimestamp } from "../utils/get-block-by-timestamp.graphql";
-import { getLatestBlock } from "../utils/get-latest-block.graphql";
+import {
+  getBlockByTimestamp,
+  getLatestBlock,
+} from "../utils/blocks-info.graphql";
 import moment from "moment";
-import { getGlobalStateByBlockNumber } from "../utils/get-global-state-by-block-number";
-import { getLatestGlobalState } from "../utils/get-latest-global-states.graphql";
+import {
+  getGlobalStateByBlockNumber,
+  getLatestGlobalState,
+} from "../utils/global-states.graphql";
 
 describe("Main flow", () => {
   test("Should return a valid response when timestamp param is not valid", async () => {

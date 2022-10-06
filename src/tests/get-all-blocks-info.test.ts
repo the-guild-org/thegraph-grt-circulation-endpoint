@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
 import mockFetch from "jest-mock-fetch";
-import { getBlockByTimestamp } from "../utils/get-block-by-timestamp.graphql";
+import { getBlockByTimestamp } from "../utils/blocks-info.graphql";
 
 describe("getAllBlocksInfo", () => {
   test("When we got 0 blocks -> we should return Null", async () => {
@@ -35,9 +35,9 @@ describe("getAllBlocksInfo", () => {
     );
     const result = await getBlockByTimestamp(1664630066);
     expect(result).not.toBeNull();
-    expect(result).toEqual(expect.any(Number));
+    expect(typeof result).toEqual("number");
   });
-  test("should return valid block number when 1 block is found", async () => {
+  test("In case of block '1' -> we return `null and not a valid block number.", async () => {
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
@@ -56,7 +56,7 @@ describe("getAllBlocksInfo", () => {
     const result = await getBlockByTimestamp(1);
     expect(result).toBeNull();
   });
-  test("Shoudl throw error when we got HTTP 300/400/500", async () => {
+  test("Should throw error when we got HTTP non-200", async () => {
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",

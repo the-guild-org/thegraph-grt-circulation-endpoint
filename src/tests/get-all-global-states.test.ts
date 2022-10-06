@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
 import mockFetch from "jest-mock-fetch";
-import { getBlockByTimestamp } from "../utils/get-block-by-timestamp.graphql";
+import { getBlockByTimestamp } from "../utils/blocks-info.graphql";
 
 describe("getAllGlobalStates", () => {
   test("When we got 0 blocks -> we should return Null", async () => {

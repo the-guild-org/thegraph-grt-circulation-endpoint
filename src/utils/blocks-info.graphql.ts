@@ -41,12 +41,37 @@ export async function getBlockByTimestamp(
   });
 
   if (!allBlocksInfoResponse) {
-    console.error(`${allBlocksInfoResponse}`);
-    throw new Error("Failed to fetch latest block");
+    console.error("Failed to fetch latest block, response is empty");
+    throw new Error("Failed to fetch latest block, response is empty");
   }
 
+  // Some time the response is empty array "[]", or the value of field "number" is "1". In this case we should return null.
   return allBlocksInfoResponse.blocks.length === 0 ||
     allBlocksInfoResponse.blocks[0].number === "1"
     ? null
     : parseInt(allBlocksInfoResponse.blocks[0].number);
+}
+
+export async function getLatestBlock(): Promise<BlockNumber> {
+  const allBlocksInfoResponse = await fetchGraphQL<
+    AllBlocksInfoQueryVariables,
+    AllBlocksInfoQuery
+  >({
+    url: "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+    query: allBlocksInfo,
+    variables: {
+      orderDirection: "desc",
+    },
+  });
+
+  if (!allBlocksInfoResponse) {
+    console.error(`${allBlocksInfoResponse}`);
+    throw new Error("Failed to fetch latest block");
+  }
+  if (!allBlocksInfoResponse.blocks) {
+    console.error(`${allBlocksInfoResponse}`);
+    throw new Error("Failed to fetch latest block");
+  }
+
+  return parseInt(allBlocksInfoResponse.blocks[0].number);
 }

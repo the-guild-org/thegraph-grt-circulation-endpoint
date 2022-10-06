@@ -8,13 +8,19 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 import jwt from "@tsndr/cloudflare-worker-jwt";
-import moment from "moment";
-import { getBlockByTimestamp } from "./utils/get-block-by-timestamp.graphql";
-import { getGlobalStateByBlockNumber } from "./utils/get-global-state-by-block-number";
-import { getLatestBlock } from "./utils/get-latest-block.graphql";
-import { getLatestGlobalState } from "./utils/get-latest-global-states.graphql";
+import {
+  getBlockByTimestamp,
+  getLatestBlock,
+} from "./utils/blocks-info.graphql";
+import {
+  getGlobalStateByBlockNumber,
+  getLatestGlobalState,
+} from "./utils/global-states.graphql";
+import { validateAndExtractTokenFromRequest } from "./utils/validate-and-extract-token-from-request";
 
-export interface Env {}
+export interface Env {
+  JWT_VERIFY_SECRET: string;
+}
 
 export default {
   async fetch(
@@ -25,57 +31,61 @@ export default {
     const urlParams = new URL(request.url);
     const params = Object.fromEntries(urlParams.searchParams);
 
-    const isValid = await jwt.verify(
-      // @ts-ignore: Object is possibly 'null'.
-      request.headers.get("Authorization").split(" ")[1],
-      "secret"
-    );
-    console.info({ isValid });
-
-    if (isValid) {
-      
-      const todayTimestamp = moment().unix();
-      const timestamp = params.timestamp
-        ? parseInt(params.timestamp)
-        : todayTimestamp;
-
-      console.info(`Params timestamp is: ${params.timestamp}`);
-      console.info(`Timestamp for blockDetails: ${timestamp}`);
-
-      const blockDetails = await getBlockByTimestamp(timestamp).then(
-        (blockInfo) => {
-          console.info(`blockDetails - blockInfo is: ${blockInfo}`);
-          if (!blockInfo) {
-            return getLatestBlock();
-          }
-
-          return blockInfo;
-        }
-      );
-
-      console.info(`blockDetails is: ${blockDetails}`);
-
-      const globalStateDetails = await getGlobalStateByBlockNumber(
-        blockDetails
-      ).then((globalStateInfo) => {
-        console.info(`globalStateDetails - blockInfo is: ${globalStateInfo}`);
-        if (!globalStateInfo) {
-          console.info(
-            `globalStateInfo is: ${globalStateInfo} and globalStateInfo false`
-          );
-
-          return getLatestGlobalState();
-        }
-
-        return globalStateInfo;
-      });
-      console.info(`Global State is: ${globalStateDetails}`);
-
-      return new Response(JSON.stringify({ globalStateDetails }));
-    } else {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+    let token = "";
+    try {
+      token = validateAndExtractTokenFromRequest(request);
+    } catch (error) {
+      return new Response((error as Error).message, {
         status: 403,
       });
     }
+
+    const isValid = await jwt.verify(token, env.JWT_VERIFY_SECRET);
+    console.info(
+      `Authorization was trying to verify. The Authorization State: ${isValid}`
+    );
+    if (!isValid) {
+      return new Response("Unauthorized", {
+        status: 403,
+      });
+    }
+
+    const todayTimestamp = Math.floor(Date.now() / 1000);
+    const timestamp = params.timestamp
+      ? parseInt(params.timestamp)
+      : todayTimestamp;
+
+    console.info(
+      `Params timestamp is: ${params.timestamp}, Timestamp for blockDetails: ${timestamp}`
+    );
+
+    const blockDetails = await getBlockByTimestamp(timestamp).then(
+      (blockInfo) => {
+        console.info(`blockDetails - blockInfo is: ${blockInfo}`);
+        if (!blockInfo) {
+          return getLatestBlock();
+        }
+
+        return blockInfo;
+      }
+    );
+
+    console.info(`blockDetails is: ${blockDetails}`);
+
+    const globalStateDetails = await getGlobalStateByBlockNumber(
+      blockDetails
+    ).then((globalStateInfo) => {
+      console.info(`globalStateDetails - blockInfo is: ${globalStateInfo}`);
+      if (globalStateInfo == null) {
+        console.info(`globalStateInfo is missing: ${globalStateInfo}`);
+
+        return getLatestGlobalState();
+      }
+
+      return globalStateInfo;
+    });
+    console.info(`Global State is: ${globalStateDetails}`);
+
+    return new Response(JSON.stringify({ globalStateDetails }));
   },
 };

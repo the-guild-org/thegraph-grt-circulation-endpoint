@@ -42,5 +42,25 @@ export async function getGlobalStateByBlockNumber(blockNumber: number | null) {
     throw new Error("globalStates.length > 1");
   }
 
-  return !globalStateResponse ? null : globalStateResponse.globalStates[0];
+  return globalStateResponse ? globalStateResponse.globalStates[0] : null;
+}
+
+export async function getLatestGlobalState() {
+  const globalStateResponse = await fetchGraphQL<
+    AllGlobalStatesQueryVariables,
+    AllGlobalStatesQuery
+  >({
+    url: "https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2",
+    query: allGlobalStates,
+    variables: {
+      orderDirection: "desc",
+    },
+  });
+
+  if (!globalStateResponse) {
+    console.error(`${globalStateResponse}`);
+    throw new Error("Failed to fetch latest global state");
+  }
+
+  return globalStateResponse.globalStates[0];
 }
