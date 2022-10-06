@@ -31,11 +31,9 @@ export default {
     const urlParams = new URL(request.url);
     const params = Object.fromEntries(urlParams.searchParams);
 
-    let token = "";
-    try {
-      token = validateAndExtractTokenFromRequest(request);
-    } catch (error) {
-      return new Response((error as Error).message, {
+    const token = validateAndExtractTokenFromRequest(request);
+    if (!token) {
+      return new Response("Missing Token", {
         status: 403,
       });
     }

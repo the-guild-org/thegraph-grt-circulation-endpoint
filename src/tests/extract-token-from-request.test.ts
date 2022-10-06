@@ -2,15 +2,38 @@ import { describe, expect, test } from "@jest/globals";
 import { validateAndExtractTokenFromRequest } from "../utils/validate-and-extract-token-from-request";
 
 describe("extract-token-from-request", () => {
-  test("When header is null -> throw error status 403", async () => {
+  test("When Request Headers get null -> Return Null", () => {
     const request = new Request("http://www.example.com", {
       headers: {
-        keys: "authorization",
-        values: "Bearer 1234567890",
+        Header: "Bearer 1234567890",
       },
     });
-    console.log(request);
-    const result = await validateAndExtractTokenFromRequest(request);
-    expect(result).toThrow(Error);
+    const result = validateAndExtractTokenFromRequest(request);
+    expect(result).toBeNull();
+  });
+  test("When Request Headers is empty string -> Return Null", () => {
+    const request = new Request("http://www.example.com", {
+      headers: {
+        Header: " ",
+      },
+    });
+    const result = validateAndExtractTokenFromRequest(request);
+    expect(result).toBeNull();
+  });
+  test("When Request Headers get only Bearer -> Return Null", () => {
+    const request = new Request("http://www.example.com", {
+      headers: {
+        Header: "Bearer",
+      },
+    });
+    const result = validateAndExtractTokenFromRequest(request);
+    expect(result).toBeNull();
+  });
+  test("When Request Headers is undefined -> Return Null", () => {
+    const request = new Request("http://www.example.com", {
+      headers: undefined,
+    });
+    const result = validateAndExtractTokenFromRequest(request);
+    expect(result).toBeNull();
   });
 });

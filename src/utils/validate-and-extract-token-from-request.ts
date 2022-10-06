@@ -1,18 +1,20 @@
-export function validateAndExtractTokenFromRequest(request: Request): string {
+export function validateAndExtractTokenFromRequest(
+  request: Request
+): string | null {
   const header = request.headers.get("authorization");
 
   if (header == null) {
-    throw new Error("Authorization header is missing");
+    return null;
   }
 
   const headerParts = header.split(" ");
 
   if (headerParts.length < 2) {
-    throw new Error("Authorization header is missing");
+    return null;
   }
 
   if (headerParts[1] == null) {
-    throw new Error("Authorization header is missing");
+    return null;
   }
 
   return headerParts[1];
