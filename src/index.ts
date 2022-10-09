@@ -48,42 +48,43 @@ export default {
       });
     }
 
-    const todayTimestamp = Math.floor(Date.now() / 1000);
-    const timestamp = params.timestamp
-      ? parseInt(params.timestamp)
-      : todayTimestamp;
+    const timestamp = params.timestamp ? parseInt(params.timestamp) : null;
 
     console.info(
       `Params timestamp is: ${params.timestamp}, Timestamp for blockDetails: ${timestamp}`
     );
+    if (!timestamp) {
+      const lastGlobalState = await getLatestGlobalState();
+      return new Response(JSON.stringify({ lastGlobalState }));
+    } else {
+      const blockDetails = await getBlockByTimestamp(timestamp).then(
+        (blockInfo) => {
+          console.info(`blockDetails - blockInfo is: ${blockInfo}`);
+          if (!blockInfo) {
+            return getLatestBlock();
+          }
 
-    const blockDetails = await getBlockByTimestamp(timestamp).then(
-      (blockInfo) => {
-        console.info(`blockDetails - blockInfo is: ${blockInfo}`);
-        if (!blockInfo) {
-          return getLatestBlock();
+          return blockInfo;
+        }
+      );
+
+      console.info(`blockDetails is: ${blockDetails}`);
+
+      const globalStateDetails = await getGlobalStateByBlockNumber(
+        blockDetails
+      ).then((globalStateInfo) => {
+        console.info(`globalStateDetails - blockInfo is: ${globalStateInfo}`);
+        if (globalStateInfo == null) {
+          console.info(`globalStateInfo is missing: ${globalStateInfo}`);
+
+          return getLatestGlobalState();
         }
 
-        return blockInfo;
-      }
-    );
+        return globalStateInfo;
+      });
+      console.info(`Global State is: ${globalStateDetails}`);
 
-    console.info(`blockDetails is: ${blockDetails}`);
-
-    const globalStateDetails = await getGlobalStateByBlockNumber(
-      blockDetails
-    ).then((globalStateInfo) => {
-      console.info(`globalStateDetails - blockInfo is: ${globalStateInfo}`);
-      if (globalStateInfo == null) {
-        console.info(`globalStateInfo is missing: ${globalStateInfo}`);
-
-        return getLatestGlobalState();
-      }
-
-      return globalStateInfo;
-    });
-    console.info(`Global State is: ${globalStateDetails}`);
-
-    return new Response(JSON.stringify({ globalStateDetails }));
+      return new Response(JSON.stringify({ globalStateDetails }));
+    }
   },
 };

@@ -1,10 +1,9 @@
 generates:
-  src/types/get-all-global-states.types.ts:
+  src/types/global-states.graphql.ts:
     schema:
-      - https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply:
-          headers:
-            Authorization: undefined
-    documents: "src/utils/get-all-global-states.graphql.ts"
+      - ? https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply
+        : headers:
+    documents: "src/utils/global-states.graphql.ts"
     config:
       enumsAsTypes: true
       scalars:
@@ -13,10 +12,11 @@ generates:
       - "typescript"
       - "typescript-operations"
 
-  src/types/get-all-blocks-info.types.ts:
+  src/types/blocks-info.graphql.ts:
     schema:
-      - https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks:
-    documents: "src/utils/get-all-blocks-info.graphql.ts"
+      - ? https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks
+        : headers:
+    documents: "src/utils/blocks-info.graphql.ts"
     config:
       enumsAsTypes: true
       scalars:

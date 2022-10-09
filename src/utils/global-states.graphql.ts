@@ -24,7 +24,7 @@ export async function getGlobalStateByBlockNumber(blockNumber: number | null) {
     AllGlobalStatesQueryVariables,
     AllGlobalStatesQuery
   >({
-    url: "https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2",
+    url: "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
     query: allGlobalStates,
     variables: {
       blockFilter: {
@@ -50,7 +50,7 @@ export async function getLatestGlobalState() {
     AllGlobalStatesQueryVariables,
     AllGlobalStatesQuery
   >({
-    url: "https://api.thegraph.com/subgraphs/name/juanmardefago/dev-subgraph2",
+    url: "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
     query: allGlobalStates,
     variables: {
       orderDirection: "desc",

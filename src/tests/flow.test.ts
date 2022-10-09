@@ -1,37 +1,20 @@
 import { describe, expect, test } from "@jest/globals";
-import {
-  getBlockByTimestamp,
-  getLatestBlock,
-} from "../utils/blocks-info.graphql";
-import moment from "moment";
-import {
-  getGlobalStateByBlockNumber,
-  getLatestGlobalState,
-} from "../utils/global-states.graphql";
+import { flow } from "../utils/flow";
 
 describe("Main flow", () => {
-  test("Should return a valid response when timestamp param is not valid", async () => {
-    const todayTimestamp = moment().unix();
-    const blockDetails = await getBlockByTimestamp(todayTimestamp).then(
-      (blockInfo) => {
-        if (!blockInfo) {
-          return getLatestBlock();
-        }
-        return blockInfo;
-      }
-    );
-    expect(blockDetails).not.toBeNull();
+  test("Should return a valid response when timestamp param is valid", async () => {
+    const timestamp = 1665295732;
+    const result = await flow(timestamp);
+    expect(result).not.toBeNull();
   });
-  test("Should return valid GlobalState if blockDetails is not valid ", async () => {
-    const blockDetails = 15653542;
-    const globalStateDetails = await getGlobalStateByBlockNumber(
-      blockDetails
-    ).then(async (globalStateInfo) => {
-      if (!globalStateInfo) {
-        return getLatestGlobalState();
-      }
-      return globalStateInfo;
-    });
-    expect(globalStateDetails).not.toBeNull();
+  test("When Timestamp is Null -> Should return lastGlobalState values", async () => {
+    const result = await flow();
+    expect(result).not.toBeNull();
+    expect(result).toContain("lastGlobalState");
+  });
+  test("When Timestamp is String -> Should return lastGlobalState values", async () => {
+    const timestamp = "boop";
+    const result = await flow(timestamp);
+    expect(result).toThrowError();
   });
 });
