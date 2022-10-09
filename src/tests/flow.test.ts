@@ -1,20 +1,50 @@
 import { describe, expect, test } from "@jest/globals";
-import { flow } from "../utils/flow";
+import { handleRequest } from "../utils/flow";
+import { sign } from "@tsndr/cloudflare-worker-jwt";
 
-describe("Main flow", () => {
-  test("Should return a valid response when timestamp param is valid", async () => {
-    const timestamp = 1665295732;
-    const result = await flow(timestamp);
-    expect(result).not.toBeNull();
+async function buildValidRequest(timestamp: number) {
+  const jwtVerifySecret = "fake";
+  const validToken = await sign({}, jwtVerifySecret);
+  const request = new Request(`https://fake.com/?timestamp=${timestamp}`, {
+    headers: {
+      Authorization: `Bearer ${validToken}`,
+    },
   });
-  test("When Timestamp is Null -> Should return lastGlobalState values", async () => {
-    const result = await flow();
-    expect(result).not.toBeNull();
-    expect(result).toContain("lastGlobalState");
+
+  return {
+    jwtVerifySecret,
+    request,
+  };
+}
+
+describe("Request/Response flow", () => {
+  test.only("Should return a valid response when timestamp param is valid", async () => {
+    const { request, jwtVerifySecret } = await buildValidRequest(1665295732);
+    const response = await handleRequest(request, { jwtVerifySecret });
+
+    expect(response.headers.get("Content-Type")).toBe("application/json");
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({
+        totalSupply: expect.any(String),
+        lockedSupply: expect.any(String),
+        lockedSupplyGenesis: expect.any(String),
+        liquidSupply: expect.any(String),
+        circulatingSupply: expect.any(String),
+      })
+    );
   });
-  test("When Timestamp is String -> Should return lastGlobalState values", async () => {
-    const timestamp = "boop";
-    const result = await flow(timestamp);
-    expect(result).toThrowError();
-  });
+
+  // test("When Timestamp is Null -> Should return lastGlobalState values", async () => {
+  //   const result = await flow();
+  //   expect(result).not.toBeNull();
+  //   expect(result).toContain("lastGlobalState");
+  // });
+
+  // test("When Timestamp is String -> Should return lastGlobalState values", async () => {
+  //   const timestamp = "boop";
+  //   // @ts-expect-error
+  //   const result = await flow(timestamp);
+  //   expect(result).toThrowError();
+  // });
 });

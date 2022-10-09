@@ -17,8 +17,11 @@ export async function handleRequest(
   const token = validateAndExtractTokenFromRequest(request);
 
   if (!token) {
-    return new Response("Missing Token", {
-      status: 403,
+    return new Response(JSON.stringify({ error: "Missing Token" }), {
+      status: 400,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   }
 
@@ -27,8 +30,11 @@ export async function handleRequest(
     `Authorization was trying to verify. The Authorization State: ${isValid}`
   );
   if (!isValid) {
-    return new Response("Unauthorized", {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 403,
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
   }
 
@@ -37,13 +43,19 @@ export async function handleRequest(
   console.info(
     `Params timestamp is: ${params.timestamp}, Timestamp for blockDetails: ${timestamp}`
   );
+
   if (!timestamp) {
     const lastGlobalState = await getLatestGlobalState();
-    return new Response(JSON.stringify({ lastGlobalState }));
+
+    return new Response(JSON.stringify(lastGlobalState), {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
   } else {
     const blockDetails = await getBlockByTimestamp(timestamp).then(
       (blockInfo) => {
-        console.info(`blockDetails - blockInfo is: ${blockInfo}`);
+        console.info(`blockDetails - blockInfo is:`, blockInfo);
         if (!blockInfo) {
           return getLatestBlock();
         }
@@ -52,51 +64,27 @@ export async function handleRequest(
       }
     );
 
-    console.info(`blockDetails is: ${blockDetails}`);
+    console.info(`blockDetails is:`, blockDetails);
 
     const globalStateDetails = await getGlobalStateByBlockNumber(
       blockDetails
     ).then((globalStateInfo) => {
-      console.info(`globalStateDetails - blockInfo is: ${globalStateInfo}`);
+      console.info(`globalStateDetails - blockInfo is:`, globalStateInfo);
       if (globalStateInfo == null) {
-        console.info(`globalStateInfo is missing: ${globalStateInfo}`);
+        console.info(`globalStateInfo is missing:`, globalStateInfo);
 
         return getLatestGlobalState();
       }
 
       return globalStateInfo;
     });
-    console.info(`Global State is: ${globalStateDetails}`);
 
-    return new Response(JSON.stringify({ globalStateDetails }));
-  }
-}
+    console.info(`Global State is:`, globalStateDetails);
 
-export async function flow(timestamp?: number): Promise<string | undefined> {
-  if (!timestamp) {
-    const lastGlobalState = await getLatestGlobalState();
-    return JSON.stringify({ lastGlobalState });
-  } else {
-    const blockDetails = await getBlockByTimestamp(timestamp).then(
-      (blockInfo) => {
-        if (!blockInfo) {
-          return getLatestBlock();
-        }
-
-        return blockInfo;
-      }
-    );
-
-    const globalStateDetails = await getGlobalStateByBlockNumber(
-      blockDetails
-    ).then((globalStateInfo) => {
-      if (globalStateInfo == null) {
-        return getLatestGlobalState();
-      }
-
-      return globalStateInfo;
+    return new Response(JSON.stringify(globalStateDetails), {
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
-
-    JSON.stringify({ globalStateDetails });
   }
 }
