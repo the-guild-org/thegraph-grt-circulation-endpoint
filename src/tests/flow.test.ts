@@ -4,10 +4,10 @@ import { sign } from "@tsndr/cloudflare-worker-jwt";
 import mockFetch from "jest-mock-fetch";
 import fetch from "jest-mock-fetch";
 
-async function buildValidRequest(timestamp: number | string | null) {
+async function buildValidRequest(queryParam: string) {
   const jwtVerifySecret = "fake";
   const validToken = await sign({}, jwtVerifySecret);
-  const request = new Request(`https://fake.com/?timestamp=${timestamp}`, {
+  const request = new Request(`https://fake.com/${queryParam}`, {
     headers: {
       Authorization: `Bearer ${validToken}`,
     },
@@ -23,7 +23,12 @@ describe("Request/Response flow", () => {
   beforeEach(() => {
     fetch.reset();
   });
-  test.only("Should return a valid response when timestamp param is valid", async () => {
+
+  test("Should return a valid response when timestamp param is not valid", async () => {
+    expect.assertions(1);
+  });
+
+  test("Should return a valid response when timestamp param is valid", async () => {
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
@@ -42,7 +47,9 @@ describe("Request/Response flow", () => {
     expect(fetch.mock.calls[0][1]).toEqual(
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks"
     );
-    const { request, jwtVerifySecret } = await buildValidRequest(1665295732);
+    const { request, jwtVerifySecret } = await buildValidRequest(
+      `?timestamp=1665295732`
+    );
 
     mockFetch(
       "POST",
@@ -76,7 +83,8 @@ describe("Request/Response flow", () => {
       })
     );
   });
-  test.only("When Timestamp is Null -> Should return lastGlobalState values", async () => {
+
+  test("When timestamp is empty -> Should return lastGlobalState values", async () => {
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
@@ -95,7 +103,7 @@ describe("Request/Response flow", () => {
     expect(fetch.mock.calls[0][1]).toEqual(
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks"
     );
-    const { request, jwtVerifySecret } = await buildValidRequest(null);
+    const { request, jwtVerifySecret } = await buildValidRequest("?timestamp=");
 
     mockFetch(
       "POST",
@@ -130,7 +138,7 @@ describe("Request/Response flow", () => {
     );
   });
 
-  test.only("When Timestamp is String -> Should return lastGlobalState values", async () => {
+  test("When timestamp is not set -> Should return lastGlobalState values", async () => {
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
@@ -149,7 +157,7 @@ describe("Request/Response flow", () => {
     expect(fetch.mock.calls[0][1]).toEqual(
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks"
     );
-    const { request, jwtVerifySecret } = await buildValidRequest("boop");
+    const { request, jwtVerifySecret } = await buildValidRequest("");
 
     mockFetch(
       "POST",
@@ -183,4 +191,9 @@ describe("Request/Response flow", () => {
       })
     );
   });
+
+  // timestamp -> valid (1234567)
+  // timestamp -> non-valid (-1)
+  // timestamp -> empty /?timestamp=
+  // timestamp -> not set /
 });
