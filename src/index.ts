@@ -8,16 +8,8 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-export interface Env {
-  // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-  // MY_KV_NAMESPACE: KVNamespace;
-  //
-  // Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-  // MY_DURABLE_OBJECT: DurableObjectNamespace;
-  //
-  // Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
-  // MY_BUCKET: R2Bucket;
-}
+import { Env } from "./env";
+import { handleRequest } from "./utils/flow";
 
 export default {
   async fetch(
@@ -25,6 +17,8 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
-    return new Response("Hello World!");
+    return await handleRequest(request, {
+      jwtVerifySecret: env.JWT_VERIFY_SECRET,
+    });
   },
 };

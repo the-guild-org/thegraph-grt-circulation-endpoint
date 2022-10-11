@@ -1,0 +1,27 @@
+generates:
+  src/types/global-states.graphql.ts:
+    schema:
+      - ? https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply
+        : headers:
+    documents: "src/utils/global-states.graphql.ts"
+    config:
+      enumsAsTypes: true
+      scalars:
+        URI: string
+    plugins:
+      - "typescript"
+      - "typescript-operations"
+
+  src/types/blocks-info.graphql.ts:
+    schema:
+      - ? https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks
+        : headers:
+    documents: "src/utils/blocks-info.graphql.ts"
+    config:
+      enumsAsTypes: true
+      scalars:
+        URI: string
+        BigInt: string
+    plugins:
+      - "typescript"
+      - "typescript-operations"
