@@ -1,10 +1,31 @@
 import jwt from "@tsndr/cloudflare-worker-jwt";
+import { AllGlobalStatesQuery } from "../types/get-all-global-states.types";
 import { getBlockByTimestamp, getLatestBlock } from "./blocks-info.graphql";
 import {
   getGlobalStateByBlockNumber,
   getLatestGlobalState,
 } from "./global-states.graphql";
 import { validateAndExtractTokenFromRequest } from "./validate-and-extract-token-from-request";
+
+function createErrorResponse(message: string, status: number): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
+function createValidResponse(
+  globalState: AllGlobalStatesQuery["globalStates"][number]
+): Response {
+  return new Response(JSON.stringify(globalState), {
+    status: 200,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
 
 export async function handleRequest(
   request: Request,
@@ -18,12 +39,7 @@ export async function handleRequest(
     const token = validateAndExtractTokenFromRequest(request);
 
     if (!token) {
-      return new Response(JSON.stringify({ error: "Missing Token" }), {
-        status: 400,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return createErrorResponse("Missing Token", 400);
     }
 
     const isValid = await jwt.verify(token, options.jwtVerifySecret);
@@ -31,12 +47,7 @@ export async function handleRequest(
       `Authorization was trying to verify. The Authorization State: ${isValid}`
     );
     if (!isValid) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 403,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return createErrorResponse("Unauthorized", 403);
     }
 
     const timestamp = params.timestamp ? parseInt(params.timestamp) : null;
@@ -48,11 +59,7 @@ export async function handleRequest(
     if (!timestamp) {
       const lastGlobalState = await getLatestGlobalState();
 
-      return new Response(JSON.stringify(lastGlobalState), {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return createValidResponse(lastGlobalState);
     } else {
       const blockDetails = await getBlockByTimestamp(timestamp).then(
         (blockInfo) => {
@@ -82,16 +89,14 @@ export async function handleRequest(
 
       console.info(`Global State is:`, globalStateDetails);
 
-      return new Response(JSON.stringify(globalStateDetails), {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      return createValidResponse(globalStateDetails);
     }
   } catch (error) {
     console.error(error);
-    throw new Error(
-      "Something went wrong - Please try again later or contact support"
+
+    return createErrorResponse(
+      "Something went wrong - Please try again later or contact support",
+      500
     );
   }
 }
