@@ -1,3 +1,3 @@
-name = "thegraph-grt-circulation-endpoint"
+name = "grt-circulation"
 main = "src/index.ts"
 compatibility_date = "2022-09-08"
