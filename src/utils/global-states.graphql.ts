@@ -1,7 +1,7 @@
 import {
-  AllGlobalStatesQueryVariables,
   AllGlobalStatesQuery,
-} from "../types/get-all-global-states.types";
+  AllGlobalStatesQueryVariables,
+} from "../types/global-states.graphql";
 import { fetchGraphQL } from "./fetch-graphql";
 
 const allGlobalStates = /* GraphQL */ `

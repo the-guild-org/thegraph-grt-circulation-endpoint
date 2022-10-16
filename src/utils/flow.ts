@@ -1,5 +1,5 @@
 import jwt from "@tsndr/cloudflare-worker-jwt";
-import { AllGlobalStatesQuery } from "../types/get-all-global-states.types";
+import { AllGlobalStatesQuery } from "../types/global-states.graphql";
 import { getBlockByTimestamp, getLatestBlock } from "./blocks-info.graphql";
 import {
   getGlobalStateByBlockNumber,
@@ -16,10 +16,32 @@ function createErrorResponse(message: string, status: number): Response {
   });
 }
 
+type PatchResponse = {
+  [Property in keyof Omit<
+    AllGlobalStatesQuery["globalStates"][number],
+    "__typename"
+  >]: number;
+};
+
+function patchResponse(
+  source: AllGlobalStatesQuery["globalStates"][number]
+): PatchResponse {
+  return {
+    totalSupply: parseFloat(source.totalSupply) / 100000000000000000000,
+    lockedSupply: parseFloat(source.lockedSupply) / 100000000000000000000,
+    lockedSupplyGenesis:
+      parseFloat(source.lockedSupplyGenesis) / 100000000000000000000,
+    liquidSupply: parseFloat(source.liquidSupply) / 100000000000000000000,
+    circulatingSupply:
+      parseFloat(source.circulatingSupply) / 100000000000000000000,
+  };
+}
+
 function createValidResponse(
   globalState: AllGlobalStatesQuery["globalStates"][number]
 ): Response {
-  return new Response(JSON.stringify(globalState), {
+  const patchedResponse = patchResponse(globalState);
+  return new Response(JSON.stringify(patchedResponse), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
