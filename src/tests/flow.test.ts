@@ -70,11 +70,11 @@ describe("Request/Response flow", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(
       expect.objectContaining({
-        totalSupply: expect.any(String),
-        lockedSupply: expect.any(String),
-        lockedSupplyGenesis: expect.any(String),
-        liquidSupply: expect.any(String),
-        circulatingSupply: expect.any(String),
+        totalSupply: expect.any(Number),
+        lockedSupply: expect.any(Number),
+        lockedSupplyGenesis: expect.any(Number),
+        liquidSupply: expect.any(Number),
+        circulatingSupply: expect.any(Number),
       })
     );
   });
@@ -126,11 +126,11 @@ describe("Request/Response flow", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(
       expect.objectContaining({
-        totalSupply: expect.any(String),
-        lockedSupply: expect.any(String),
-        lockedSupplyGenesis: expect.any(String),
-        liquidSupply: expect.any(String),
-        circulatingSupply: expect.any(String),
+        totalSupply: expect.any(Number),
+        lockedSupply: expect.any(Number),
+        lockedSupplyGenesis: expect.any(Number),
+        liquidSupply: expect.any(Number),
+        circulatingSupply: expect.any(Number),
       })
     );
   });
@@ -180,11 +180,11 @@ describe("Request/Response flow", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(
       expect.objectContaining({
-        totalSupply: expect.any(String),
-        lockedSupply: expect.any(String),
-        lockedSupplyGenesis: expect.any(String),
-        liquidSupply: expect.any(String),
-        circulatingSupply: expect.any(String),
+        totalSupply: expect.any(Number),
+        lockedSupply: expect.any(Number),
+        lockedSupplyGenesis: expect.any(Number),
+        liquidSupply: expect.any(Number),
+        circulatingSupply: expect.any(Number),
       })
     );
   });
@@ -234,11 +234,11 @@ describe("Request/Response flow", () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual(
       expect.objectContaining({
-        totalSupply: expect.any(String),
-        lockedSupply: expect.any(String),
-        lockedSupplyGenesis: expect.any(String),
-        liquidSupply: expect.any(String),
-        circulatingSupply: expect.any(String),
+        totalSupply: expect.any(Number),
+        lockedSupply: expect.any(Number),
+        lockedSupplyGenesis: expect.any(Number),
+        liquidSupply: expect.any(Number),
+        circulatingSupply: expect.any(Number),
       })
     );
   });
