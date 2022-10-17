@@ -7,6 +7,8 @@ import {
 } from "./global-states.graphql";
 import { validateAndExtractTokenFromRequest } from "./validate-and-extract-token-from-request";
 
+const DIVISION_NUMBER = 100000000000000000000;
+
 function createErrorResponse(message: string, status: number): Response {
   return new Response(JSON.stringify({ error: message }), {
     status,
@@ -27,13 +29,12 @@ function patchResponse(
   source: AllGlobalStatesQuery["globalStates"][number]
 ): PatchResponse {
   return {
-    totalSupply: parseFloat(source.totalSupply) / 100000000000000000000,
-    lockedSupply: parseFloat(source.lockedSupply) / 100000000000000000000,
+    totalSupply: parseFloat(source.totalSupply) / DIVISION_NUMBER,
+    lockedSupply: parseFloat(source.lockedSupply) / DIVISION_NUMBER,
     lockedSupplyGenesis:
-      parseFloat(source.lockedSupplyGenesis) / 100000000000000000000,
-    liquidSupply: parseFloat(source.liquidSupply) / 100000000000000000000,
-    circulatingSupply:
-      parseFloat(source.circulatingSupply) / 100000000000000000000,
+      parseFloat(source.lockedSupplyGenesis) / DIVISION_NUMBER,
+    liquidSupply: parseFloat(source.liquidSupply) / DIVISION_NUMBER,
+    circulatingSupply: parseFloat(source.circulatingSupply) / DIVISION_NUMBER,
   };
 }
 
