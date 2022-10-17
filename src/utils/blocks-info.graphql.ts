@@ -1,7 +1,7 @@
 import {
-  AllBlocksInfoQueryVariables,
   AllBlocksInfoQuery,
-} from "../types/get-all-blocks-info.types";
+  AllBlocksInfoQueryVariables,
+} from "../types/blocks-info.graphql";
 import { fetchGraphQL } from "./fetch-graphql";
 
 const allBlocksInfo = /* GraphQL */ `
