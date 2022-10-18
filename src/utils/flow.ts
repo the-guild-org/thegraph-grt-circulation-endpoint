@@ -8,7 +8,7 @@ import {
 import { validateAndExtractTokenFromRequest } from "./validate-and-extract-token-from-request";
 import { Decimal } from "decimal.js";
 
-const DIVISION_NUMBER = 10000000000000000000;
+const DIVISION_NUMBER = 1000000000000000000;
 
 function createErrorResponse(message: string, status: number): Response {
   return new Response(JSON.stringify({ error: message }), {
@@ -84,6 +84,7 @@ export async function handleRequest(
     );
 
     if (!timestamp) {
+      console.log("im here");
       const lastGlobalState = await getLatestGlobalState();
 
       return createValidResponse(lastGlobalState);
