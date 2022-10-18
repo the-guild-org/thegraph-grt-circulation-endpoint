@@ -3,24 +3,7 @@ import mockFetch from "jest-mock-fetch";
 import { patchResponse } from "../utils/flow";
 
 describe("patchResponse function", () => {
-  test("Should responed divaded number when we put string", () => {
-    mockFetch(
-      "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
-      {
-        data: {
-          globalStates: [
-            {
-              totalSupply: "10472593084278602817126230051",
-              lockedSupply: "2481516171545208333333335778",
-              lockedSupplyGenesis: "2406735547043125000000001983",
-              liquidSupply: "7991076912733394483792894273",
-              circulatingSupply: "8065857537235477817126228068",
-            },
-          ],
-        },
-      }
-    );
+  test("Should responed divided number when we put string", () => {
     const result = patchResponse({
       totalSupply: "10472593084278602817126230051",
       lockedSupply: "2481516171545208333333335778",
@@ -41,23 +24,6 @@ describe("patchResponse function", () => {
     });
   });
   test("Null response is not allowed", () => {
-    mockFetch(
-      "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
-      {
-        data: {
-          globalStates: [
-            {
-              totalSupply: "10472593084278602817126230051",
-              lockedSupply: "2481516171545208333333335778",
-              lockedSupplyGenesis: "2406735547043125000000001983",
-              liquidSupply: "7991076912733394483792894273",
-              circulatingSupply: "8065857537235477817126228068",
-            },
-          ],
-        },
-      }
-    );
     const result = patchResponse({
       totalSupply: "10472593084278602817126230051",
       lockedSupply: "2481516171545208333333335778",
@@ -74,23 +40,6 @@ describe("patchResponse function", () => {
     });
   });
   test("NaN response is not allowed", () => {
-    mockFetch(
-      "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
-      {
-        data: {
-          globalStates: [
-            {
-              totalSupply: "10472593084278602817126230051",
-              lockedSupply: "2481516171545208333333335778",
-              lockedSupplyGenesis: "2406735547043125000000001983",
-              liquidSupply: "7991076912733394483792894273",
-              circulatingSupply: "8065857537235477817126228068",
-            },
-          ],
-        },
-      }
-    );
     const result = patchResponse({
       totalSupply: "10472593084278602817126230051",
       lockedSupply: "2481516171545208333333335778",
@@ -107,23 +56,6 @@ describe("patchResponse function", () => {
     });
   });
   test("Response must be Number type", () => {
-    mockFetch(
-      "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
-      {
-        data: {
-          globalStates: [
-            {
-              totalSupply: "10472593084278602817126230051",
-              lockedSupply: "2481516171545208333333335778",
-              lockedSupplyGenesis: "2406735547043125000000001983",
-              liquidSupply: "7991076912733394483792894273",
-              circulatingSupply: "8065857537235477817126228068",
-            },
-          ],
-        },
-      }
-    );
     const result = patchResponse({
       totalSupply: "10472593084278602817126230051",
       lockedSupply: "2481516171545208333333335778",

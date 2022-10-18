@@ -23,12 +23,11 @@ type PatchResponse = {
   [Property in keyof Omit<
     AllGlobalStatesQuery["globalStates"][number],
     "__typename"
-  >]: Number;
+  >]: number;
 };
 
 function getDividedNumberFromResult(input: string) {
-  const number = new Decimal(input).dividedBy(DIVISION_NUMBER).toNumber();
-  return number;
+  return new Decimal(input).dividedBy(DIVISION_NUMBER).toNumber();
 }
 
 export function patchResponse(
