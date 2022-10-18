@@ -6,6 +6,7 @@ import {
   getLatestGlobalState,
 } from "./global-states.graphql";
 import { validateAndExtractTokenFromRequest } from "./validate-and-extract-token-from-request";
+import { Decimal } from "decimal.js";
 
 const DIVISION_NUMBER = 10000000000000000000;
 const DIVISION_NUMBER_TOTAL_SUPPLY = 100000000000000000000;
@@ -23,19 +24,39 @@ type PatchResponse = {
   [Property in keyof Omit<
     AllGlobalStatesQuery["globalStates"][number],
     "__typename"
-  >]: number;
+  >]: Decimal;
 };
+
+function getDividedNumberFromResult(input: string, divisionNumber: number) {
+  const parseNumber = parseFloat(input);
+  const number = new Decimal(parseNumber).dividedBy(divisionNumber);
+  return number;
+}
 
 export function patchResponse(
   source: AllGlobalStatesQuery["globalStates"][number]
 ): PatchResponse {
   return {
-    totalSupply: parseFloat(source.totalSupply) / DIVISION_NUMBER_TOTAL_SUPPLY,
-    lockedSupply: parseFloat(source.lockedSupply) / DIVISION_NUMBER,
-    lockedSupplyGenesis:
-      parseFloat(source.lockedSupplyGenesis) / DIVISION_NUMBER,
-    liquidSupply: parseFloat(source.liquidSupply) / DIVISION_NUMBER,
-    circulatingSupply: parseFloat(source.circulatingSupply) / DIVISION_NUMBER,
+    totalSupply: getDividedNumberFromResult(
+      source.totalSupply,
+      DIVISION_NUMBER_TOTAL_SUPPLY
+    ),
+    lockedSupply: getDividedNumberFromResult(
+      source.lockedSupply,
+      DIVISION_NUMBER
+    ),
+    lockedSupplyGenesis: getDividedNumberFromResult(
+      source.lockedSupplyGenesis,
+      DIVISION_NUMBER
+    ),
+    liquidSupply: getDividedNumberFromResult(
+      source.liquidSupply,
+      DIVISION_NUMBER
+    ),
+    circulatingSupply: getDividedNumberFromResult(
+      source.circulatingSupply,
+      DIVISION_NUMBER
+    ),
   };
 }
 
