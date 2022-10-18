@@ -9,7 +9,6 @@ import { validateAndExtractTokenFromRequest } from "./validate-and-extract-token
 import { Decimal } from "decimal.js";
 
 const DIVISION_NUMBER = 10000000000000000000;
-const DIVISION_NUMBER_TOTAL_SUPPLY = 100000000000000000000;
 
 function createErrorResponse(message: string, status: number): Response {
   return new Response(JSON.stringify({ error: message }), {
@@ -24,12 +23,11 @@ type PatchResponse = {
   [Property in keyof Omit<
     AllGlobalStatesQuery["globalStates"][number],
     "__typename"
-  >]: Decimal;
+  >]: Number;
 };
 
-function getDividedNumberFromResult(input: string, divisionNumber: number) {
-  const parseNumber = parseFloat(input);
-  const number = new Decimal(parseNumber).dividedBy(divisionNumber);
+function getDividedNumberFromResult(input: string) {
+  const number = new Decimal(input).dividedBy(DIVISION_NUMBER).toNumber();
   return number;
 }
 
@@ -37,26 +35,11 @@ export function patchResponse(
   source: AllGlobalStatesQuery["globalStates"][number]
 ): PatchResponse {
   return {
-    totalSupply: getDividedNumberFromResult(
-      source.totalSupply,
-      DIVISION_NUMBER_TOTAL_SUPPLY
-    ),
-    lockedSupply: getDividedNumberFromResult(
-      source.lockedSupply,
-      DIVISION_NUMBER
-    ),
-    lockedSupplyGenesis: getDividedNumberFromResult(
-      source.lockedSupplyGenesis,
-      DIVISION_NUMBER
-    ),
-    liquidSupply: getDividedNumberFromResult(
-      source.liquidSupply,
-      DIVISION_NUMBER
-    ),
-    circulatingSupply: getDividedNumberFromResult(
-      source.circulatingSupply,
-      DIVISION_NUMBER
-    ),
+    totalSupply: getDividedNumberFromResult(source.totalSupply),
+    lockedSupply: getDividedNumberFromResult(source.lockedSupply),
+    lockedSupplyGenesis: getDividedNumberFromResult(source.lockedSupplyGenesis),
+    liquidSupply: getDividedNumberFromResult(source.liquidSupply),
+    circulatingSupply: getDividedNumberFromResult(source.circulatingSupply),
   };
 }
 
