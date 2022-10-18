@@ -84,7 +84,6 @@ export async function handleRequest(
     );
 
     if (!timestamp) {
-      console.log("im here");
       const lastGlobalState = await getLatestGlobalState();
 
       return createValidResponse(lastGlobalState);
