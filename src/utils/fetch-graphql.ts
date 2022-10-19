@@ -17,6 +17,10 @@ export async function fetchGraphQL<TVariables, TResponse>(input: {
     method: "POST",
   });
 
+  if (response.status !== 200) {
+    throw new Error(`Invalid GraphQL status code: ${response.status}`);
+  }
+
   const body = await response.json<ExecutionResult<TResponse>>();
 
   if (body.errors && body.errors.length > 0) {
@@ -25,6 +29,7 @@ export async function fetchGraphQL<TVariables, TResponse>(input: {
       `GraphQL Errors: ${body.errors.map((e) => e.message).join(",")}`
     );
   }
+
   if (!body.data) {
     console.log(`${body.data}`);
     throw new Error(`GraphQL Error: unexpected empty response`);

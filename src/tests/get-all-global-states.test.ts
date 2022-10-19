@@ -1,6 +1,8 @@
 import { describe, expect, test } from "@jest/globals";
-import mockFetch from "jest-mock-fetch";
+import { mockFetch } from "./utils";
 import { getBlockByTimestamp } from "../utils/blocks-info.graphql";
+
+// TODO: test the actual function
 
 describe("getAllGlobalStates", () => {
   test("When we got 0 blocks -> we should return Null", async () => {
@@ -56,7 +58,9 @@ describe("getAllGlobalStates", () => {
     const result = await getBlockByTimestamp(1);
     expect(result).toBeNull();
   });
-  test("Shoudl throw error when we got HTTP 300/400/500", async () => {
+
+  // TODO: Fix this one to be with "rejects"
+  test("should throw error when we got HTTP 300/400/500", async () => {
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",

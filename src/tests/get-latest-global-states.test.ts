@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import mockFetch from "jest-mock-fetch";
+import { mockFetch } from "./utils";
 import { getLatestGlobalState } from "../utils/global-states.graphql";
 
 describe("getLatestGlobalState", () => {
@@ -22,6 +22,8 @@ describe("getLatestGlobalState", () => {
       }
     );
     const result$ = getLatestGlobalState();
+    // TODO: Fix this
     expect(result$);
+    // TODO: real assertion
   });
 });

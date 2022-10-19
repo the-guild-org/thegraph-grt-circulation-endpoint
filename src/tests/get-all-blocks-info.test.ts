@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import mockFetch from "jest-mock-fetch";
+import { mockFetch } from "./utils";
 import { getBlockByTimestamp } from "../utils/blocks-info.graphql";
 
 describe("getAllBlocksInfo", () => {
@@ -56,7 +56,8 @@ describe("getAllBlocksInfo", () => {
     const result = await getBlockByTimestamp(1);
     expect(result).toBeNull();
   });
-  test("Should throw error when we got HTTP non-200", async () => {
+
+  test("Should throw error when we got HTTP 200 + GraphQL error", async () => {
     mockFetch(
       "POST",
       "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
@@ -67,9 +68,27 @@ describe("getAllBlocksInfo", () => {
               "Failed to decode `BigInt` value: `cannot parse integer from empty string`",
           },
         ],
-      }
+      },
+      200
     );
-    const result = await getBlockByTimestamp(1);
-    expect(result).toBeNull();
+    const result$ = getBlockByTimestamp(1);
+    await expect(result$).rejects.toEqual(
+      new Error(
+        "GraphQL Errors: Failed to decode `BigInt` value: `cannot parse integer from empty string`"
+      )
+    );
+  });
+
+  test("Should throw error when we got HTTP non-200", async () => {
+    mockFetch(
+      "POST",
+      "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+      {},
+      500
+    );
+    const result$ = getBlockByTimestamp(1);
+    await expect(result$).rejects.toEqual(
+      new Error("Invalid GraphQL status code: 500")
+    );
   });
 });

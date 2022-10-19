@@ -1,5 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
-import mockFetch from "jest-mock-fetch";
+import { mockFetch } from "./utils";
 import { getLatestBlock } from "../utils/blocks-info.graphql";
 
 describe("getLatestBlock", () => {
@@ -22,6 +22,7 @@ describe("getLatestBlock", () => {
     const result$ = await getLatestBlock();
     expect(result$).not.toBeNull();
   });
+
   test("The result should be Number", async () => {
     mockFetch(
       "POST",
@@ -40,5 +41,6 @@ describe("getLatestBlock", () => {
     );
     const result$ = await getLatestBlock();
     expect(typeof result$).toEqual("number");
+    // TODO: Check the result value
   });
 });

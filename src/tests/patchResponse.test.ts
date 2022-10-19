@@ -1,5 +1,4 @@
 import { describe, expect, test } from "@jest/globals";
-import mockFetch from "jest-mock-fetch";
 import { patchResponse } from "../utils/flow";
 
 describe("patchResponse function", () => {

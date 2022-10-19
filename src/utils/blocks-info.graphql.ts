@@ -68,6 +68,7 @@ export async function getLatestBlock(): Promise<BlockNumber> {
     console.error(`${allBlocksInfoResponse}`);
     throw new Error("Failed to fetch latest block");
   }
+
   if (!allBlocksInfoResponse.blocks) {
     console.error(`${allBlocksInfoResponse}`);
     throw new Error("Failed to fetch latest block");

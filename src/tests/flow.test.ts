@@ -1,7 +1,6 @@
-import { afterEach, beforeEach, describe, expect, test } from "@jest/globals";
+import { describe, expect, test } from "@jest/globals";
 import { handleRequest } from "../utils/flow";
 import { sign } from "@tsndr/cloudflare-worker-jwt";
-import fetch from "jest-mock-fetch";
 import { mockFetch } from "./utils";
 
 async function buildValidRequest(queryParam: string) {
