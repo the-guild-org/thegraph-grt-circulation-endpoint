@@ -1,65 +1,44 @@
 import { describe, expect, test } from "@jest/globals";
-import mockFetch from "jest-mock-fetch";
-import { getBlockByTimestamp } from "../utils/blocks-info.graphql";
+import { mockFetch } from "./utils";
+import { getGlobalStateByBlockNumber } from "../utils/global-states.graphql";
 
 describe("getAllGlobalStates", () => {
-  test("When we got 0 blocks -> we should return Null", async () => {
-    mockFetch(
-      "POST",
-      "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
-      {
-        data: {
-          blocks: [],
-        },
-      }
-    );
-    const result = await getBlockByTimestamp(121212121212121212);
-    expect(result).toBeNull();
-  });
-
   test("When we got valid timestamp -> we should return Number", async () => {
     mockFetch(
       "POST",
-      "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
       {
         data: {
-          blocks: [
+          globalStates: [
             {
-              id: "0xd125365fb2839beefb583319429a544da58758548a0454fddb9fed553ed94b06",
-              number: "15653542",
-              timestamp: "1664630075",
+              totalSupply: "10472555636557181479854142240",
+              lockedSupply: "2477839088211875000000002459",
+              lockedSupplyGenesis: "2403173047043125000000001990",
+              liquidSupply: "7994716548345306479854139781",
+              circulatingSupply: "8069382589514056479854140250",
             },
           ],
         },
-      }
+      },
+      200
     );
-    const result = await getBlockByTimestamp(1664630066);
+    const result = await getGlobalStateByBlockNumber(15653542);
     expect(result).not.toBeNull();
-    expect(result).toEqual(expect.any(Number));
-  });
-  test("should return valid block number when 1 block is found", async () => {
-    mockFetch(
-      "POST",
-      "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
-      {
-        data: {
-          blocks: [
-            {
-              id: "0x88e96d4537bea4d9c05d12549907b32561d3bf31f45aae734cdc119f13406cb6",
-              number: "1",
-              timestamp: "1438269988",
-            },
-          ],
-        },
-      }
+    expect(await result).toEqual(
+      expect.objectContaining({
+        totalSupply: "10472555636557181479854142240",
+        lockedSupply: "2477839088211875000000002459",
+        lockedSupplyGenesis: "2403173047043125000000001990",
+        liquidSupply: "7994716548345306479854139781",
+        circulatingSupply: "8069382589514056479854140250",
+      })
     );
-    const result = await getBlockByTimestamp(1);
-    expect(result).toBeNull();
   });
-  test("Shoudl throw error when we got HTTP 300/400/500", async () => {
+
+  test("should throw error when we got HTTP 300/400/500", async () => {
     mockFetch(
       "POST",
-      "https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks",
+      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
       {
         errors: [
           {
@@ -67,9 +46,12 @@ describe("getAllGlobalStates", () => {
               "Failed to decode `BigInt` value: `cannot parse integer from empty string`",
           },
         ],
-      }
+      },
+      500
     );
-    const result = await getBlockByTimestamp(1);
-    expect(result).toBeNull();
+    const result$ = getGlobalStateByBlockNumber(1);
+    await expect(result$).rejects.toEqual(
+      new Error("Invalid GraphQL status code: 500")
+    );
   });
 });

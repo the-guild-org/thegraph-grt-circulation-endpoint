@@ -1,7 +1,7 @@
 import {
-  AllGlobalStatesQueryVariables,
   AllGlobalStatesQuery,
-} from "../types/get-all-global-states.types";
+  AllGlobalStatesQueryVariables,
+} from "../types/global-states.graphql";
 import { fetchGraphQL } from "./fetch-graphql";
 
 const allGlobalStates = /* GraphQL */ `
@@ -35,7 +35,7 @@ export async function getGlobalStateByBlockNumber(blockNumber: number | null) {
 
   if (!globalStateResponse) {
     console.error(`${globalStateResponse}`);
-    throw new Error("Failed to fetch latest global state");
+    throw new Error("Failed to fetch global state");
   }
   if (globalStateResponse.globalStates.length > 1) {
     console.error(`${globalStateResponse}`);

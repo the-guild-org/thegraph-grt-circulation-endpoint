@@ -1,11 +1,14 @@
 import jwt from "@tsndr/cloudflare-worker-jwt";
-import { AllGlobalStatesQuery } from "../types/get-all-global-states.types";
+import { AllGlobalStatesQuery } from "../types/global-states.graphql";
 import { getBlockByTimestamp, getLatestBlock } from "./blocks-info.graphql";
 import {
   getGlobalStateByBlockNumber,
   getLatestGlobalState,
 } from "./global-states.graphql";
 import { validateAndExtractTokenFromRequest } from "./validate-and-extract-token-from-request";
+import { Decimal } from "decimal.js";
+
+const DIVISION_NUMBER = 1000000000000000000;
 
 function createErrorResponse(message: string, status: number): Response {
   return new Response(JSON.stringify({ error: message }), {
@@ -16,10 +19,34 @@ function createErrorResponse(message: string, status: number): Response {
   });
 }
 
+type PatchResponse = {
+  [Property in keyof Omit<
+    AllGlobalStatesQuery["globalStates"][number],
+    "__typename"
+  >]: number;
+};
+
+function getDividedNumberFromResult(input: string) {
+  return new Decimal(input).dividedBy(DIVISION_NUMBER).toNumber();
+}
+
+export function patchResponse(
+  source: AllGlobalStatesQuery["globalStates"][number]
+): PatchResponse {
+  return {
+    totalSupply: getDividedNumberFromResult(source.totalSupply),
+    lockedSupply: getDividedNumberFromResult(source.lockedSupply),
+    lockedSupplyGenesis: getDividedNumberFromResult(source.lockedSupplyGenesis),
+    liquidSupply: getDividedNumberFromResult(source.liquidSupply),
+    circulatingSupply: getDividedNumberFromResult(source.circulatingSupply),
+  };
+}
+
 function createValidResponse(
   globalState: AllGlobalStatesQuery["globalStates"][number]
 ): Response {
-  return new Response(JSON.stringify(globalState), {
+  const patchedResponse = patchResponse(globalState);
+  return new Response(JSON.stringify(patchedResponse), {
     status: 200,
     headers: {
       "Content-Type": "application/json",

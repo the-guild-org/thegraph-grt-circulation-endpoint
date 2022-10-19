@@ -1,7 +1,7 @@
 import {
-  AllBlocksInfoQueryVariables,
   AllBlocksInfoQuery,
-} from "../types/get-all-blocks-info.types";
+  AllBlocksInfoQueryVariables,
+} from "../types/blocks-info.graphql";
 import { fetchGraphQL } from "./fetch-graphql";
 
 const allBlocksInfo = /* GraphQL */ `
@@ -68,6 +68,7 @@ export async function getLatestBlock(): Promise<BlockNumber> {
     console.error(`${allBlocksInfoResponse}`);
     throw new Error("Failed to fetch latest block");
   }
+
   if (!allBlocksInfoResponse.blocks) {
     console.error(`${allBlocksInfoResponse}`);
     throw new Error("Failed to fetch latest block");

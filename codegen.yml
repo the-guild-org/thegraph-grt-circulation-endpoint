@@ -8,14 +8,15 @@ generates:
       enumsAsTypes: true
       scalars:
         URI: string
+        BigInt: string
     plugins:
       - "typescript"
       - "typescript-operations"
 
   src/types/blocks-info.graphql.ts:
     schema:
-      - ? https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks
-        : headers:
+      - https://api.thegraph.com/subgraphs/name/blocklytics/ethereum-blocks:
+          headers:
     documents: "src/utils/blocks-info.graphql.ts"
     config:
       enumsAsTypes: true
