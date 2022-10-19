@@ -11,7 +11,8 @@ describe("getAllBlocksInfo", () => {
         data: {
           blocks: [],
         },
-      }
+      },
+      200
     );
     const result = await getBlockByTimestamp(121212121212121212);
     expect(result).toBeNull();
@@ -31,7 +32,8 @@ describe("getAllBlocksInfo", () => {
             },
           ],
         },
-      }
+      },
+      200
     );
     const result = await getBlockByTimestamp(1664630066);
     expect(result).not.toBeNull();
@@ -51,7 +53,8 @@ describe("getAllBlocksInfo", () => {
             },
           ],
         },
-      }
+      },
+      200
     );
     const result = await getBlockByTimestamp(1);
     expect(result).toBeNull();

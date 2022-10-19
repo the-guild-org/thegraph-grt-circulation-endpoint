@@ -11,15 +11,11 @@ describe("patchResponse function", () => {
       circulatingSupply: "8065857537235477817126228068",
     });
     expect.objectContaining({
-      totalSupply: expect(result.totalSupply).toBe(1047259308.4278603),
-      lockedSupply: expect(result.lockedSupply).toBe(248151617.15452084),
-      lockedSupplyGenesis: expect(result.lockedSupplyGenesis).toBe(
-        240673554.7043125
-      ),
-      liquidSupply: expect(result.liquidSupply).toBe(799107691.2733394),
-      circulatingSupply: expect(result.circulatingSupply).toBe(
-        806585753.7235478
-      ),
+      totalSupply: 1047259308.4278603,
+      lockedSupply: 248151617.15452084,
+      lockedSupplyGenesis: 240673554.7043125,
+      liquidSupply: 799107691.2733394,
+      circulatingSupply: 806585753.7235478,
     });
   });
   test("Null response is not allowed", () => {
