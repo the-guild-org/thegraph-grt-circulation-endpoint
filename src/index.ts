@@ -11,6 +11,7 @@
 import { Env } from "./env";
 import { handleRequest } from "./utils/flow";
 import jwt from "@tsndr/cloudflare-worker-jwt";
+import { getNewToken } from "./utils/getNewToekn";
 
 export default {
   async fetch(
@@ -18,6 +19,10 @@ export default {
     env: Env,
     ctx: ExecutionContext
   ): Promise<Response> {
+    if (request.method === "POST" && request.url.endsWith("/get-new-token")) {
+      await getNewToken(request, env);
+    }
+
     if (request.method === "POST" && request.url.endsWith("/create-token")) {
       const passwordHeader = request.headers.get("password");
 
