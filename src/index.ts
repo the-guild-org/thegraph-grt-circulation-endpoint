@@ -9,9 +9,10 @@
  */
 
 import { Env } from "./env";
-import { handleRequest } from "./utils/flow";
+import { createErrorResponse, handleRequest } from "./utils/flow";
 import jwt from "@tsndr/cloudflare-worker-jwt";
-import { getNewToken } from "./utils/getNewToekn";
+import { getNewToken } from "./utils/getNewToken";
+import { validateAndExtractTokenFromRequest } from "./utils/validate-and-extract-token-from-request";
 
 export default {
   async fetch(
@@ -20,8 +21,11 @@ export default {
     ctx: ExecutionContext
   ): Promise<Response> {
     if (request.method === "POST" && request.url.endsWith("/get-new-token")) {
-      const result = getNewToken(request, env);
-      return result;
+      const token = validateAndExtractTokenFromRequest(request);
+      if (!token) {
+        return createErrorResponse("Missing Token", 400);
+      }
+      return await getNewToken(token, request, env, env.JWT_VERIFY_SECRET);
     }
 
     if (request.method === "POST" && request.url.endsWith("/create-token")) {
