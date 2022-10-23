@@ -20,7 +20,8 @@ export default {
     ctx: ExecutionContext
   ): Promise<Response> {
     if (request.method === "POST" && request.url.endsWith("/get-new-token")) {
-      await getNewToken(request, env);
+      const result = getNewToken(request, env);
+      return result;
     }
 
     if (request.method === "POST" && request.url.endsWith("/create-token")) {

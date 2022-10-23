@@ -1,10 +1,16 @@
 import { Env } from "../env";
 import jwt from "@tsndr/cloudflare-worker-jwt";
+import { validateAndExtractTokenFromRequest } from "./validate-and-extract-token-from-request";
 
 export async function getNewToken(request: Request, env: Env) {
-  const oldtoken = request.headers.get("oldtoken");
+  const token = validateAndExtractTokenFromRequest(request);
 
-  if (oldtoken === env.JWT_VERIFY_SECRET) {
+  if (!token) {
+    throw new Error(
+      "No token provided. Please provide a token in the Authorization header."
+    );
+  }
+  if (token) {
     const body = await request.json<{ months: number }>();
     const expiration = new Date();
     expiration.setMonth(expiration.getMonth() + body.months);
@@ -13,7 +19,6 @@ export async function getNewToken(request: Request, env: Env) {
       { exp: expirationTimestamp },
       env.JWT_VERIFY_SECRET
     );
-
     return new Response(JSON.stringify({ token, expiration }));
   }
 }
