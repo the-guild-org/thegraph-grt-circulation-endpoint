@@ -10,7 +10,7 @@ import { Decimal } from "decimal.js";
 
 const DIVISION_NUMBER = 1000000000000000000;
 
-function createErrorResponse(message: string, status: number): Response {
+export function createErrorResponse(message: string, status: number): Response {
   return new Response(JSON.stringify({ error: message }), {
     status,
     headers: {
