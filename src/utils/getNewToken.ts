@@ -17,9 +17,8 @@ export async function getNewToken(
     return createErrorResponse("Unauthorized", 403);
   }
 
-  const body = await request.json<{ months: number }>();
   const expiration = new Date();
-  expiration.setMonth(expiration.getMonth() + body.months);
+  expiration.setMonth(expiration.getMonth() + 3);
   const expirationTimestamp = Math.floor(expiration.getTime() / 1000);
   const token = await jwt.sign(
     { exp: expirationTimestamp },
