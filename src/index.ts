@@ -9,10 +9,8 @@
  */
 
 import { Env } from "./env";
-import { createErrorResponse, handleRequest } from "./utils/flow";
-import jwt from "@tsndr/cloudflare-worker-jwt";
+import { handleRequest } from "./utils/flow";
 import { getNewToken } from "./utils/getNewToken";
-import { validateAndExtractTokenFromRequest } from "./utils/validate-and-extract-token-from-request";
 import { createToken } from "./utils/createToken";
 
 export default {
