@@ -3,15 +3,16 @@ import jwt from "@tsndr/cloudflare-worker-jwt";
 import { validateAndExtractTokenFromRequest } from "./validate-and-extract-token-from-request";
 import { createErrorResponse } from "./flow";
 
-// input: Authorization: Bearer CURRENT_TOKEN
 export async function getNewToken(
-  tokenInput: string,
   request: Request,
-  env: Env,
-  jwtVerifySecret: string
+  env: Env
 ): Promise<Response> {
-  const isValid = await jwt.verify(tokenInput, jwtVerifySecret);
+  const currentToken = validateAndExtractTokenFromRequest(request);
+  if (!currentToken) {
+    return createErrorResponse("Missing Token", 400);
+  }
 
+  const isValid = await jwt.verify(currentToken, env.JWT_VERIFY_SECRET);
   if (!isValid) {
     return createErrorResponse("Unauthorized", 403);
   }
@@ -26,6 +27,4 @@ export async function getNewToken(
   );
 
   return new Response(JSON.stringify({ token, expiration }));
-
-  // return output: { "token": "...", "expiration": "..." }
 }

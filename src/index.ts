@@ -13,6 +13,7 @@ import { createErrorResponse, handleRequest } from "./utils/flow";
 import jwt from "@tsndr/cloudflare-worker-jwt";
 import { getNewToken } from "./utils/getNewToken";
 import { validateAndExtractTokenFromRequest } from "./utils/validate-and-extract-token-from-request";
+import { createToken } from "./utils/createToken";
 
 export default {
   async fetch(
@@ -21,28 +22,11 @@ export default {
     ctx: ExecutionContext
   ): Promise<Response> {
     if (request.method === "POST" && request.url.endsWith("/get-new-token")) {
-      const token = validateAndExtractTokenFromRequest(request);
-      if (!token) {
-        return createErrorResponse("Missing Token", 400);
-      }
-      return await getNewToken(token, request, env, env.JWT_VERIFY_SECRET);
+      return await getNewToken(request, env);
     }
 
     if (request.method === "POST" && request.url.endsWith("/create-token")) {
-      const passwordHeader = request.headers.get("password");
-
-      if (passwordHeader === env.TOKEN_CREATION_PASSWORD) {
-        const body = await request.json<{ months: number }>();
-        const expiration = new Date();
-        expiration.setMonth(expiration.getMonth() + body.months);
-        const expirationTimestamp = Math.floor(expiration.getTime() / 1000);
-        const token = await jwt.sign(
-          { exp: expirationTimestamp },
-          env.JWT_VERIFY_SECRET
-        );
-
-        return new Response(JSON.stringify({ token, expiration }));
-      }
+      return await createToken(request, env);
     }
 
     return await handleRequest(request, {
