@@ -58,12 +58,7 @@ function createCirculatingSupplyResponse(
   globalState: AllGlobalStatesQuery["globalStates"][number]
 ): Response {
   const patchedResponse = patchResponse(globalState);
-  return new Response(JSON.stringify(patchedResponse.circulatingSupply), {
-    status: 200,
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  return new Response(patchedResponse.circulatingSupply);
 }
 
 export async function handleRequest(
