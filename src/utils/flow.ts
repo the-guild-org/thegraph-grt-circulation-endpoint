@@ -70,19 +70,16 @@ export async function handleRequest(
   try {
     const urlParams = new URL(request.url);
     const params = Object.fromEntries(urlParams.searchParams);
-    const token = validateAndExtractTokenFromRequest(request);
 
     const coinmarketcap = request.url.endsWith("/coinmarketcap");
     // Token should be false if the route is "coinmarketcap" according to theGraph request
-    if (!token && coinmarketcap) {
+    if (coinmarketcap) {
       const lastGlobalState = await getLatestGlobalState();
-
-      if (coinmarketcap) {
-        console.log("Circulating Supply Request");
-        return createCirculatingSupplyResponse(lastGlobalState);
-      }
+      console.log("Circulating Supply Request");
+      return createCirculatingSupplyResponse(lastGlobalState);
     }
 
+    const token = validateAndExtractTokenFromRequest(request);
     if (!token) {
       return createErrorResponse("Missing Token", 400);
     }
