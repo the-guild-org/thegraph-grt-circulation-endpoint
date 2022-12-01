@@ -71,8 +71,8 @@ export async function handleRequest(
     const urlParams = new URL(request.url);
     const params = Object.fromEntries(urlParams.searchParams);
 
-    const coinmarketcap = request.url.endsWith("/coinmarketcap");
-    // Token should be false if the route is "coinmarketcap" according to theGraph request
+    const coinmarketcap = request.url.endsWith("/");
+    // Token should be false if the route is "/" according to theGraph request
     if (coinmarketcap) {
       const lastGlobalState = await getLatestGlobalState();
       console.log("Circulating Supply Request");
@@ -98,7 +98,9 @@ export async function handleRequest(
       `Params timestamp is: ${params.timestamp}, Timestamp for blockDetails: ${timestamp}`
     );
 
-    if (!timestamp) {
+    const extended = request.url.endsWith("/extended");
+
+    if (!timestamp && extended) {
       const lastGlobalState = await getLatestGlobalState();
 
       return createValidResponse(lastGlobalState);
