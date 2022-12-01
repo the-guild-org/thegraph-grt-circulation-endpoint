@@ -25,7 +25,7 @@ const allBlocksInfo = /* GraphQL */ `
 type BlockNumber = number;
 
 export async function getBlockByTimestamp(
-  timestamp: number | null
+  timestamp: number
 ): Promise<BlockNumber | null> {
   const allBlocksInfoResponse = await fetchGraphQL<
     AllBlocksInfoQueryVariables,
