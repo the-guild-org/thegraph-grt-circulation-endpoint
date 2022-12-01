@@ -83,7 +83,6 @@ export async function handleRequest(
     if (!token) {
       return createErrorResponse("Missing Token", 400);
     }
-
     const isValid = await jwt.verify(token, options.jwtVerifySecret);
     console.info(
       `Authorization was trying to verify. The Authorization State: ${isValid}`
@@ -92,19 +91,11 @@ export async function handleRequest(
       return createErrorResponse("Unauthorized", 403);
     }
 
-    const timestamp = params.timestamp ? parseInt(params.timestamp) : null;
-
-    console.info(
-      `Params timestamp is: ${params.timestamp}, Timestamp for blockDetails: ${timestamp}`
-    );
-
     const extended = request.url.endsWith("/extended");
 
-    if (!timestamp && extended) {
-      const lastGlobalState = await getLatestGlobalState();
+    const timestamp = params.timestamp ? parseInt(params.timestamp) : null;
 
-      return createValidResponse(lastGlobalState);
-    } else {
+    if (extended && timestamp) {
       const blockDetails = await getBlockByTimestamp(timestamp).then(
         (blockInfo) => {
           console.info(`blockDetails - blockInfo is:`, blockInfo);
@@ -115,7 +106,6 @@ export async function handleRequest(
           return blockInfo;
         }
       );
-
       console.info(`blockDetails is:`, blockDetails);
 
       const globalStateDetails = await getGlobalStateByBlockNumber(
@@ -134,6 +124,10 @@ export async function handleRequest(
       console.info(`Global State is:`, globalStateDetails);
 
       return createValidResponse(globalStateDetails);
+    } else {
+      const lastGlobalState = await getLatestGlobalState();
+
+      return createValidResponse(lastGlobalState);
     }
   } catch (error) {
     console.error(error);
