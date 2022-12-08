@@ -71,67 +71,60 @@ export async function handleRequest(
     const urlParams = new URL(request.url);
     const params = Object.fromEntries(urlParams.searchParams);
 
-    const coinmarketcap = request.url.endsWith("/coinmarketcap");
-    // Token should be false if the route is "coinmarketcap" according to theGraph request
-    if (coinmarketcap) {
+    const extended = request.url.endsWith("/extended");
+
+    if (extended) {
+      const token = validateAndExtractTokenFromRequest(request);
+      if (!token) {
+        return createErrorResponse("Missing Token", 400);
+      }
+      const isValid = await jwt.verify(token, options.jwtVerifySecret);
+      console.info(
+        `Authorization was trying to verify. The Authorization State: ${isValid}`
+      );
+      if (!isValid) {
+        return createErrorResponse("Unauthorized", 403);
+      }
+      const timestamp = params.timestamp ? parseInt(params.timestamp) : null;
+
+      if (timestamp) {
+        const blockDetails = await getBlockByTimestamp(timestamp).then(
+          (blockInfo) => {
+            console.info(`blockDetails - blockInfo is:`, blockInfo);
+            if (!blockInfo) {
+              return getLatestBlock();
+            }
+
+            return blockInfo;
+          }
+        );
+        console.info(`blockDetails is:`, blockDetails);
+
+        const globalStateDetails = await getGlobalStateByBlockNumber(
+          blockDetails
+        ).then((globalStateInfo) => {
+          console.info(`globalStateDetails - blockInfo is:`, globalStateInfo);
+          if (globalStateInfo == null) {
+            console.info(`globalStateInfo is missing:`, globalStateInfo);
+
+            return getLatestGlobalState();
+          }
+
+          return globalStateInfo;
+        });
+
+        console.info(`Global State is:`, globalStateDetails);
+
+        return createValidResponse(globalStateDetails);
+      } else {
+        const lastGlobalState = await getLatestGlobalState();
+        console.log("Extended Request");
+        return createValidResponse(lastGlobalState);
+      }
+    } else {
       const lastGlobalState = await getLatestGlobalState();
       console.log("Circulating Supply Request");
       return createCirculatingSupplyResponse(lastGlobalState);
-    }
-
-    const token = validateAndExtractTokenFromRequest(request);
-    if (!token) {
-      return createErrorResponse("Missing Token", 400);
-    }
-
-    const isValid = await jwt.verify(token, options.jwtVerifySecret);
-    console.info(
-      `Authorization was trying to verify. The Authorization State: ${isValid}`
-    );
-    if (!isValid) {
-      return createErrorResponse("Unauthorized", 403);
-    }
-
-    const timestamp = params.timestamp ? parseInt(params.timestamp) : null;
-
-    console.info(
-      `Params timestamp is: ${params.timestamp}, Timestamp for blockDetails: ${timestamp}`
-    );
-
-    if (!timestamp) {
-      const lastGlobalState = await getLatestGlobalState();
-
-      return createValidResponse(lastGlobalState);
-    } else {
-      const blockDetails = await getBlockByTimestamp(timestamp).then(
-        (blockInfo) => {
-          console.info(`blockDetails - blockInfo is:`, blockInfo);
-          if (!blockInfo) {
-            return getLatestBlock();
-          }
-
-          return blockInfo;
-        }
-      );
-
-      console.info(`blockDetails is:`, blockDetails);
-
-      const globalStateDetails = await getGlobalStateByBlockNumber(
-        blockDetails
-      ).then((globalStateInfo) => {
-        console.info(`globalStateDetails - blockInfo is:`, globalStateInfo);
-        if (globalStateInfo == null) {
-          console.info(`globalStateInfo is missing:`, globalStateInfo);
-
-          return getLatestGlobalState();
-        }
-
-        return globalStateInfo;
-      });
-
-      console.info(`Global State is:`, globalStateDetails);
-
-      return createValidResponse(globalStateDetails);
     }
   } catch (error) {
     console.error(error);
