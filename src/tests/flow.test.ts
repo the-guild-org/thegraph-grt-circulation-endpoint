@@ -58,11 +58,17 @@ describe("Request/Response flow", () => {
     );
 
     const response = await handleRequest(request, { jwtVerifySecret });
-    expect(response.headers.get("Content-Type")).toBe(
-      "text/plain;charset=UTF-8"
-    );
+    expect(response.headers.get("Content-Type")).toBe("application/json");
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(8065857537.235477);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({
+        totalSupply: 10472593084.278602817126230051,
+        lockedSupply: expect.any(Number),
+        lockedSupplyGenesis: expect.any(Number),
+        liquidSupply: expect.any(Number),
+        circulatingSupply: expect.any(Number),
+      })
+    );
   });
 
   test("Should return a valid response when timestamp param is valid", async () => {
@@ -104,11 +110,17 @@ describe("Request/Response flow", () => {
     );
 
     const response = await handleRequest(request, { jwtVerifySecret });
-    expect(response.headers.get("Content-Type")).toBe(
-      "text/plain;charset=UTF-8"
-    );
+    expect(response.headers.get("Content-Type")).toBe("application/json");
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(8065857537.235477);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({
+        totalSupply: 20472593084.278602817126230051,
+        lockedSupply: expect.any(Number),
+        lockedSupplyGenesis: expect.any(Number),
+        liquidSupply: expect.any(Number),
+        circulatingSupply: expect.any(Number),
+      })
+    );
   });
 
   test("When timestamp is empty -> Should return lastGlobalState values", async () => {
@@ -148,11 +160,17 @@ describe("Request/Response flow", () => {
     );
 
     const response = await handleRequest(request, { jwtVerifySecret });
-    expect(response.headers.get("Content-Type")).toBe(
-      "text/plain;charset=UTF-8"
-    );
+    expect(response.headers.get("Content-Type")).toBe("application/json");
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(8065857537.235477);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({
+        totalSupply: expect.any(Number),
+        lockedSupply: expect.any(Number),
+        lockedSupplyGenesis: expect.any(Number),
+        liquidSupply: expect.any(Number),
+        circulatingSupply: expect.any(Number),
+      })
+    );
   });
 
   test("When timestamp is not set -> Should return lastGlobalState values", async () => {
@@ -192,11 +210,17 @@ describe("Request/Response flow", () => {
     );
 
     const response = await handleRequest(request, { jwtVerifySecret });
-    expect(response.headers.get("Content-Type")).toBe(
-      "text/plain;charset=UTF-8"
-    );
+    expect(response.headers.get("Content-Type")).toBe("application/json");
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(8065857537.235477);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({
+        totalSupply: expect.any(Number),
+        lockedSupply: expect.any(Number),
+        lockedSupplyGenesis: expect.any(Number),
+        liquidSupply: expect.any(Number),
+        circulatingSupply: expect.any(Number),
+      })
+    );
   });
 
   test("When timestamp is not set -> Should return lastGlobalState value and divided", async () => {
@@ -220,10 +244,16 @@ describe("Request/Response flow", () => {
 
     const { request, jwtVerifySecret } = await buildValidRequest("");
     const response = await handleRequest(request, { jwtVerifySecret });
-    expect(response.headers.get("Content-Type")).toBe(
-      "text/plain;charset=UTF-8"
-    );
+    expect(response.headers.get("Content-Type")).toBe("application/json");
     expect(response.status).toBe(200);
-    expect(await response.json()).toEqual(8065857537.235477);
+    expect(await response.json()).toEqual(
+      expect.objectContaining({
+        totalSupply: 10472593084.278602817126230051,
+        lockedSupply: 2481516171.545208333333335778,
+        lockedSupplyGenesis: 2406735547.043125000000001983,
+        liquidSupply: 7991076912.733394483792894273,
+        circulatingSupply: 8065857537.235477817126228068,
+      })
+    );
   });
 });
