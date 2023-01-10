@@ -6,7 +6,7 @@ describe("getLatestGlobalState", () => {
   test("should throw an error when HTTP response is 200 but we got GraphQL errors", () => {
     mockFetch(
       "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
+      "https://api.thegraph.com/subgraphs/name/graphprotocol/grt-circulating-supply",
       {
         data: {
           globalStates: [
