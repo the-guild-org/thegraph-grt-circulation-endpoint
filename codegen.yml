@@ -1,7 +1,7 @@
 generates:
   src/types/global-states.graphql.ts:
     schema:
-      - ? https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply
+      - ? https://api.thegraph.com/subgraphs/name/graphprotocol/grt-circulating-supply
         : headers:
     documents: "src/utils/global-states.graphql.ts"
     config:

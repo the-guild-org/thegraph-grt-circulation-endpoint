@@ -41,7 +41,7 @@ describe("Request/Response flow", () => {
 
     mockFetch(
       "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
+      "https://api.thegraph.com/subgraphs/name/graphprotocol/grt-circulating-supply",
       {
         data: {
           globalStates: [
@@ -93,7 +93,7 @@ describe("Request/Response flow", () => {
 
     mockFetch(
       "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
+      "https://api.thegraph.com/subgraphs/name/graphprotocol/grt-circulating-supply",
       {
         data: {
           globalStates: [
@@ -143,7 +143,7 @@ describe("Request/Response flow", () => {
 
     mockFetch(
       "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
+      "https://api.thegraph.com/subgraphs/name/graphprotocol/grt-circulating-supply",
       {
         data: {
           globalStates: [
@@ -193,7 +193,7 @@ describe("Request/Response flow", () => {
 
     mockFetch(
       "POST",
-      "https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply",
+      "https://api.thegraph.com/subgraphs/name/graphprotocol/grt-circulating-supply",
       {
         data: {
           globalStates: [
@@ -226,7 +226,7 @@ describe("Request/Response flow", () => {
   test("When timestamp is not set -> Should return lastGlobalState value and divided", async () => {
     mockFetch(
       "POST",
-      `https://api.thegraph.com/subgraphs/name/juanmardefago/grt-circulating-supply`,
+      `https://api.thegraph.com/subgraphs/name/graphprotocol/grt-circulating-supply`,
       {
         data: {
           globalStates: [
